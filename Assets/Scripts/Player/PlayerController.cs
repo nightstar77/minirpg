@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private CharacterController controller;
+    private PlayerAnimation playerAnimation;
     private Vector3 moveDirection;
 
     [SerializeField]
@@ -11,6 +12,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+        playerAnimation = GetComponent<PlayerAnimation>();
     }
 
     private void Update()
@@ -30,10 +32,6 @@ public class PlayerController : MonoBehaviour
         // 获取前后输入（S=-1，W=1）
         float vertical = Input.GetAxisRaw("Vertical");
 
-        // 把两个输入组合成一个三维方向
-        // x = 左右
-        // y = 不移动（跳跃以后才会改变）
-        // z = 前后
         Vector3 moveDirection = new Vector3(horizontal, vertical, 0f);
 
         // 如果方向长度大于1（例如同时按 W+D）
@@ -47,6 +45,7 @@ public class PlayerController : MonoBehaviour
         // 所以：
         // 方向 × 速度 × 每帧时间
         controller.Move(moveDirection * moveSpeed * Time.deltaTime);
+        playerAnimation.SetSpeed(moveDirection.magnitude);
     }
 
 }
