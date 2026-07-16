@@ -1,74 +1,174 @@
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// 玩家攻击模块
+///
+/// 【职责】
+/// 1. 接收攻击输入
+/// 2. 控制攻击流程
+/// 3. 控制连击
+/// 4. 通知动画播放
+/// 5. 修改玩家状态
+///
+/// 【不负责】
+/// ✘ 检测敌人
+/// ✘ 造成伤害
+/// ✘ 播放特效
+/// ✘ 播放音效
+///
+/// Version 0.5
+/// </summary>
 public class PlayerAttack : MonoBehaviour
 {
-    private Animator animator;
+    #region ===== Inspector =====
+
+    [Header("Combo 设置")]
+    [Tooltip("最大连击段数")]
+    public int maxCombo = 2;
+
+    #endregion
+
+    #region ===== Component =====
+
     private PlayerAnimation playerAnimation;
 
-    public int attackDamage = 10;
-    public float attackRange = 1.5f;
+    /// <summary>
+    /// 玩家状态机
+    /// </summary>
+    private PlayerState playerState;
 
-    public LayerMask enemylayer;
-    void Start()
+    #endregion
+
+    #region ===== Runtime =====
+
+    /// <summary>
+    /// 当前是否正在攻击
+    /// </summary>
+    private bool isAttacking;
+
+    /// <summary>
+    /// 当前连击序号
+    /// Attack1=1
+    /// Attack2=2
+    /// </summary>
+    private int comboIndex;
+
+    /// <summary>
+    /// 当前是否允许继续连击
+    /// 动画事件开启
+    /// </summary>
+    private bool canCombo;
+
+    /// <summary>
+    /// 玩家是否已经输入下一次攻击
+    /// </summary>
+    private bool attackQueued;
+
+    #endregion
+
+    #region ===== Unity =====
+
+    private void Start()
     {
-        animator = GetComponent<Animator>();
         playerAnimation = GetComponent<PlayerAnimation>();
+        playerState = GetComponent<PlayerState>();
     }
 
-    void Update()
+    private void Update()
+    {
+        ReadAttackInput();
+    }
+
+    #endregion
+
+    #region ===== Input =====
+
+    /// <summary>
+    /// 读取攻击输入
+    /// </summary>
+    private void ReadAttackInput()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            TryAttack();
+            HandleAttackInput();
         }
-
     }
 
-    void TryAttack()
+    /// <summary>
+    /// 处理攻击输入
+    /// </summary>
+    private void HandleAttackInput()
     {
-        playerAnimation.PlayAttack();
-        DetectAttack();
-    }
-
-    void DetectAttack()
-    {
-        /*
-         * Physics.OverlapSphere()
-         * Unity�������API
-         * ���ã����һ�����η�Χ������Collider
-         * ����1������λ��
-         * ����2���뾶
-         * ����3�����Layer
-         */
-        Collider[] hitEnemies = Physics.OverlapSphere(transform.position,attackRange,enemylayer);
-
-        /*
-         * �������м�⵽�ĵ���
-         */
-        foreach (Collider enemy in hitEnemies)
+        if (isAttacking)
         {
-            EnemyBase enemyScript;
-
-            if (enemy.TryGetComponent<EnemyBase>(out enemyScript))
+            if (canCombo)
             {
-                /*
-                 * ���õ��˵����˺���
-                 */
-                //enemyScript.TakeDamage(attackDamage, transform.position);
+                attackQueued = true;
             }
+
+            return;
         }
+
+        StartComboAttack();
     }
 
-    private void OnDrawGizmosSelected()
+    #endregion
+
+    #region ===== Combo =====
+
+    /// <summary>
+    /// 开始一次攻击
+    /// </summary>
+    private void StartComboAttack()
     {
-        /*
-         *Gizmos
-         *Unity���Ի��ƹ���
-         */
-        Gizmos.DrawWireSphere(transform.position,attackRange);
-
-
+        isAttacking = true;
+        playerState.ChangeState(PlayerState.State.Attack);
+        comboIndex++;
+        if (comboIndex > maxCombo)
+        {
+            comboIndex = 1;
+        }
+        playerAnimation.PlayCombo(comboIndex);
     }
 
+    /// <summary>
+    /// 动画事件调用
+    /// 开启连击窗口
+    /// </summary>
+    public void EnableCombo()
+    {
+        canCombo = true;
+    }
 
+    /// <summary>
+    /// 动画事件调用
+    /// 攻击结束
+    /// </summary>
+    public void EndComboAttack()
+    {
+        if (attackQueued)
+        {
+            attackQueued = false;
+            canCombo = false;
+            StartComboAttack();
+            return;
+        }
+        isAttacking = false;
+        comboIndex = 0;
+        canCombo = false;
+        playerState.ChangeState(PlayerState.State.Idle);
+        playerAnimation.ResetCombo();
+    }
+
+    #endregion
+
+    #region ===== Property =====
+
+    /// <summary>
+    /// 当前是否正在攻击
+    /// 提供给其它脚本读取
+    /// </summary>
+    public bool IsAttacking => isAttacking;
+
+    #endregion
 }
