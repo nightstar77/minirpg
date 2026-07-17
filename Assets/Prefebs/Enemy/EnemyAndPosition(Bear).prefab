@@ -210,7 +210,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8981548093572437909}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: AttackPosL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -357,7 +357,7 @@ GameObject:
   - component: {fileID: 5871641748311247808}
   - component: {fileID: 5316214337057572013}
   - component: {fileID: 6156569527696800312}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Enemy-Bear
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -673,7 +673,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5690843322304253420}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: AttackPosR
   m_TagString: Untagged
   m_Icon: {fileID: 0}

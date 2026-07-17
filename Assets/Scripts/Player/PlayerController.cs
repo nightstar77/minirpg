@@ -1,85 +1,34 @@
 using UnityEngine;
-
-/// <summary>
-/// ===========================================================
-/// PlayerController
-///
-/// Íæ¼ÒÒÆ¶¯Ä£¿é
-///
-/// ¡¾Ö°Ôğ¡¿
-///
-/// 1¡¢¶ÁÈ¡Íæ¼ÒÊäÈë
-/// 2¡¢¼ÆËãÒÆ¶¯·½Ïò
-/// 3¡¢CharacterControllerÒÆ¶¯
-/// 4¡¢¿ØÖÆ½ÇÉ«³¯Ïò
-///
-/// ¡¾²»¸ºÔğ¡¿
-///
-/// ¡Á ¹¥»÷
-/// ¡Á ¶¯»­
-/// ¡Á ÑªÁ¿
-/// ¡Á ¼¼ÄÜ
-///
-/// Version 0.5
-/// ===========================================================
-/// </summary>
+using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     #region ===== Inspector =====
 
-    [Header("ÒÆ¶¯ÉèÖÃ")]
+    [Header("ç§»åŠ¨è®¾ç½®")]
 
-    [Tooltip("Íæ¼ÒÒÆ¶¯ËÙ¶È£¨µ¥Î»£ºÃ×/Ãë£©")]
+    [Tooltip("ç©å®¶ç§»åŠ¨é€Ÿåº¦ï¼ˆå•ä½ï¼šç±³/ç§’ï¼‰")]
     public float moveSpeed = 6f;
 
     #endregion
 
     #region ===== Component =====
-
-    /// <summary>
-    /// CharacterController×é¼ş
-    ///
-    /// Unity¹Ù·½Ìá¹©µÄÈËÎï¿ØÖÆÆ÷¡£
-    ///
-    /// ÓÃÓÚ£º
-    ///     Move()
-    ///     Åö×²¼ì²â
-    ///     Â¥Ìİ
-    ///     Ğ±ÆÂ
-    /// </summary>
-    private CharacterController controller;
-
-    /// <summary>
-    /// SpriteRenderer
-    ///
-    /// ¿ØÖÆ½ÇÉ«×óÓÒ·­×ª¡£
-    /// </summary>
-    private SpriteRenderer spriteRenderer;
-
-    /// <summary>
-    /// PlayerState
-    ///
-    /// ¿ØÖÆÍæ¼Ò×´Ì¬¡£
-    /// </summary>
+    private Rigidbody2D rb;
     private PlayerState playerState;
 
     #endregion
 
     #region ===== Runtime =====
-
-    /// <summary>
-    /// ÊäÈë·½Ïò
-    ///
-    /// x£º
-    ///     ×óÓÒ
-    ///
-    /// z£º
-    ///     ÉÏÏÂ£¨Èç¹ûÊÇ3D£©
-    ///
-    /// y£º
-    ///     ÉÏÏÂ£¨Èç¹ûÊÇ2D£©
-    /// </summary>
-    private Vector3 moveDirection;
+    private Vector2 moveInput;
+    /*
+    * ç©å®¶æœ€åç§»åŠ¨æ–¹å‘
+    *
+    * ç”¨äºï¼š
+    *
+    * 1. åŠ¨ç”»æœå‘
+    * 2. æ”»å‡»æ–¹å‘
+    * 3. WeaponPointæ–¹å‘
+    */
+    private Vector2 lastMoveDirection = Vector2.down;
 
     #endregion
 
@@ -88,59 +37,50 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// Start
     ///
-    /// UnityÉúÃüÖÜÆÚº¯Êı¡£
+    /// Unityç”Ÿå‘½å‘¨æœŸå‡½æ•°ã€‚
     ///
-    /// ÔÚÓÎÏ·¿ªÊ¼Ê±Ö´ĞĞÒ»´Î¡£
+    /// åœ¨æ¸¸æˆå¼€å§‹æ—¶æ‰§è¡Œä¸€æ¬¡ã€‚
     ///
-    /// ÓÃÓÚ»º´æ×é¼ş¡£
+    /// ç”¨äºç¼“å­˜ç»„ä»¶ã€‚
     /// </summary>
-    private void Start()
+    private void Awake()
     {
-        controller = GetComponent<CharacterController>();
-
-        spriteRenderer = GetComponent<SpriteRenderer>();
-
+        rb = GetComponent<Rigidbody2D>();
         playerState = GetComponent<PlayerState>();
     }
 
-    /// <summary>
-    /// Update
-    ///
-    /// UnityÃ¿Ö¡µ÷ÓÃ¡£
-    /// </summary>
-    private void Update()
+    private void FixedUpdate()
     {
-        ReadMovementInput();
-
         Move();
     }
 
     #endregion
 
     #region ===== Input =====
-
-    /// <summary>
-    /// ¶ÁÈ¡Íæ¼ÒÊäÈë
-    /// </summary>
-    private void ReadMovementInput()
+    public void OnMove(InputAction.CallbackContext context)
     {
-        // Èç¹ûÕıÔÚ¹¥»÷£¬²»ÔÊĞíÒÆ¶¯£¨ºóĞø¿É¸ù¾İĞèÒª¸Ä³ÉÔÊĞí»ºÂıÒÆ¶¯£©
-        if (playerState.IsState(PlayerState.State.Attack))
+
+        /*
+         * ReadValue<Vector2>()
+         *
+         * è¯»å–è¾“å…¥å€¼
+         *
+         * å› ä¸ºMoveè®¾ç½®çš„æ˜¯Vector2
+         *
+         * æ‰€ä»¥è¯»å–Vector2
+         */
+        moveInput = context.ReadValue<Vector2>();
+
+        if (moveInput.sqrMagnitude > 1f)
         {
-            moveDirection = Vector3.zero;
-            return;
+            moveInput.Normalize();
         }
 
-        float horizontal = Input.GetAxisRaw("Horizontal");
-
-        float vertical = Input.GetAxisRaw("Vertical");
-
-        moveDirection = new Vector3(horizontal, vertical, 0f);
-
-        if (moveDirection.magnitude > 1f)
+        if (moveInput.sqrMagnitude > 0.01f)
         {
-            moveDirection.Normalize();
+            lastMoveDirection = moveInput;
         }
+
     }
 
     #endregion
@@ -148,28 +88,16 @@ public class PlayerController : MonoBehaviour
     #region ===== Movement =====
 
     /// <summary>
-    /// Íæ¼ÒÒÆ¶¯
+    /// ç©å®¶ç§»åŠ¨
     /// </summary>
     private void Move()
     {
-        controller.Move(moveDirection * moveSpeed * Time.deltaTime);
-
-        UpdateFacingDirection();
-    }
-
-    /// <summary>
-    /// ¸üĞÂ½ÇÉ«³¯Ïò
-    /// </summary>
-    private void UpdateFacingDirection()
-    {
-        if (moveDirection.x > 0.01f)
+        if (playerState.IsState(PlayerState.State.Attack))
         {
-            spriteRenderer.flipX = false;
+            rb.linearVelocity = Vector2.zero;
+            return;
         }
-        else if (moveDirection.x < -0.01f)
-        {
-            spriteRenderer.flipX = true;
-        }
+        rb.linearVelocity = (moveInput * moveSpeed);
     }
 
     #endregion
@@ -177,14 +105,19 @@ public class PlayerController : MonoBehaviour
     #region ===== Property =====
 
     /// <summary>
-    /// ¸øÆäËüÄ£¿é¶ÁÈ¡ÒÆ¶¯·½Ïò
+    /// å½“å‰è¾“å…¥æ–¹å‘
     /// </summary>
-    public Vector3 MoveDirection => moveDirection;
+    public Vector2 MoveDirection => moveInput;
 
     /// <summary>
-    /// µ±Ç°ÊÇ·ñÕıÔÚÒÆ¶¯
+    /// ç©å®¶æœ€åæœå‘
     /// </summary>
-    public bool IsMoving => moveDirection.sqrMagnitude > 0.01f;
+    public Vector2 LastMoveDirection => lastMoveDirection;
+
+    /// <summary>
+    /// å½“å‰æ˜¯å¦æ­£åœ¨ç§»åŠ¨
+    /// </summary>
+    public bool IsMoving => moveInput.sqrMagnitude > 0.01f;
 
     #endregion
 }
