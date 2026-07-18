@@ -22,6 +22,7 @@ public class PlayerAnimation : MonoBehaviour
 
     private void Update()
     {
+        //Debug.Log(playerState.CurrentState);
         UpdateMoveAnimation();
         UpdateFacing();
     }
@@ -64,49 +65,21 @@ public class PlayerAnimation : MonoBehaviour
 
     #region ===== Public =====
 
-    /// <summary>
-    /// 播放受伤动画。
-    /// Trigger 类型参数。
-    /// </summary>
     public void PlayHurt()
     {
         animator.SetTrigger("Hurt");
     }
 
-    /// <summary>
-    /// 播放死亡动画。
-    /// Trigger 类型参数。
-    /// </summary>
     public void PlayDead()
     {
         animator.SetTrigger("Dead");
     }
 
-    /// <summary>
-    /// 播放连击动画
-    ///
-    /// 参数：
-    /// combo
-    /// 当前连击编号
-    ///
-    /// 例如：
-    /// Combo=1 → Attack1
-    /// Combo=2 → Attack2
-    /// Combo=3 → Attack3
-    ///
-    /// 以后整个项目只有这里可以修改 Animator 的 Combo 参数。
-    /// </summary>
     public void PlayCombo(int combo)
     {
         animator.SetInteger("Combo", combo);
     }
 
-    /// <summary>
-    /// 重置连击。
-    ///
-    /// 攻击结束时调用。
-    /// 将 Animator 的 Combo 参数恢复为0。
-    /// </summary>
     public void ResetCombo()
     {
         animator.SetInteger("Combo", 0);

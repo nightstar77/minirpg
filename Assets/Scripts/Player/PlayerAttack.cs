@@ -30,14 +30,8 @@ public class PlayerAttack : MonoBehaviour
     {
         playerAnimation = GetComponent<PlayerAnimation>();
         playerState = GetComponent<PlayerState>();
-        if (weapon != null)
-        {
-            weapon.Init(transform);
-        }
-        else
-        {
-            Debug.LogError("PlayerAttack没有绑定WeaponHitBox");
-        }
+        weapon = GetComponentInChildren<WeaponHitBox>();
+        weapon.Init(transform);
     }
 
     private void Update()
@@ -53,6 +47,11 @@ public class PlayerAttack : MonoBehaviour
         if (weapon == null)
         {
             Debug.LogError("PlayerAttack没有绑定WeaponHitBox");
+            return;
+        }
+        if (!playerState.IsState(PlayerState.State.Attack))
+        {
+            Debug.Log("当前不是攻击状态，取消HitBox");
             return;
         }
         weapon.ResetHitTargets();
@@ -72,6 +71,10 @@ public class PlayerAttack : MonoBehaviour
         {
             HandleAttackInput();
         }
+        if (Input.GetMouseButtonDown(1))
+        {
+            CancelAttack();
+        }
     }
     private void HandleAttackInput()
     {
@@ -81,10 +84,8 @@ public class PlayerAttack : MonoBehaviour
             {
                 attackQueued = true;
             }
-
             return;
         }
-
         StartComboAttack();
     }
 
@@ -122,6 +123,35 @@ public class PlayerAttack : MonoBehaviour
         canCombo = false;
         playerState.ChangeState(PlayerState.State.Idle);
         playerAnimation.ResetCombo();
+    }
+
+    /// <summary>
+    /// 强制取消当前攻击
+    ///
+    /// 使用场景：
+    ///
+    /// 1. 玩家受伤
+    /// 2. 玩家死亡
+    /// 3. 技能打断
+    /// </summary>
+    public void CancelAttack()
+    {
+        //关闭HitBox
+        if (weapon != null)
+        {
+            weapon.DisableHitBox();
+        }
+        //取消攻击状态
+        isAttacking = false;
+        //取消连击
+        comboIndex = 0;
+        attackQueued = false;
+        canCombo = false;
+        //重置Animator参数
+        playerAnimation.ResetCombo();
+        //恢复玩家状态
+        playerState.ChangeState(PlayerState.State.Idle);
+        Debug.Log("攻击被取消");
     }
 
     #endregion

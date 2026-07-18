@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public enum EnemyState { idle, walk, pursuit, attack, getHit, dead }
+//public enum EnemyState { Idle, Patrol, Chase, Attack, Hurt, Dead }
 
 public class EnemyBase : MonoBehaviour, IDamageable
 {
@@ -47,12 +48,32 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     public virtual void Update()
     {
-        if (state == EnemyState.idle) { idleUpdate(); }
-        else if (state == EnemyState.walk) { walkUpdate(); }
-        else if (state == EnemyState.pursuit) { pursuitUpdate(); }
-        else if (state == EnemyState.attack) { attackUpdate(); }
-        else if (state == EnemyState.getHit) { getHitUpdate(); }
-        else if (state == EnemyState.dead) { deadUpdate(); }
+        switch (state)
+        {
+            case EnemyState.idle:
+                idleUpdate();
+                break;
+
+            case EnemyState.walk:
+                walkUpdate();
+                break;
+
+            case EnemyState.pursuit:
+                pursuitUpdate();
+                break;
+
+            case EnemyState.attack:
+                attackUpdate();
+                break;
+
+            case EnemyState.getHit:
+                getHitUpdate();
+                break;
+
+            case EnemyState.dead:
+                deadUpdate();
+                break;
+        }
     }
 
     public virtual void FixedUpdate()

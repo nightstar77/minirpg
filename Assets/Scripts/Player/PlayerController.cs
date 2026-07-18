@@ -92,9 +92,8 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void Move()
     {
-        if (playerState.IsState(PlayerState.State.Attack))
+        if (playerState.IsState(PlayerState.State.Attack) || playerState.IsState(PlayerState.State.Hurt) || playerState.IsState(PlayerState.State.Dead))
         {
-            rb.linearVelocity = Vector2.zero;
             return;
         }
         rb.linearVelocity = (moveInput * moveSpeed);

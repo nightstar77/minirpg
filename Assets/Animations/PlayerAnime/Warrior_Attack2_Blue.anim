@@ -80,14 +80,21 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.2
-    functionName: EnableCombo
+    functionName: AttackStart
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.2
-    functionName: StartHitBox
+    functionName: EnableCombo
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.4
+    functionName: AttackEnd
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
@@ -95,13 +102,6 @@ AnimationClip:
     messageOptions: 0
   - time: 0.4
     functionName: EndComboAttack
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.4
-    functionName: EndHitBox
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
