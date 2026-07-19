@@ -4,15 +4,19 @@ using UnityEngine.UI;
 public enum EnemyState { idle, walk, pursuit, attack, getHit, dead }
 //public enum EnemyState { Idle, Patrol, Chase, Attack, Hurt, Dead }
 
+[RequireComponent(typeof(EnemyAttack))]
 public class EnemyBase : MonoBehaviour, IDamageable
 {
     [Header("组件")]
     public Rigidbody2D rb;
-    public Animator am;
+    //public Animator am;
     public SpriteRenderer sr;
     public EnemyState state = EnemyState.walk;
     public EnemyState stateOld = EnemyState.walk;
     public Slider hpSlider;
+    protected EnemyAttack enemyAttack;
+
+    private EnemyAnimation enemyAnimation;
 
     [Header("移动相关变量")]
     public Transform pos1;
@@ -20,16 +24,9 @@ public class EnemyBase : MonoBehaviour, IDamageable
     public Transform targetPos;
 
     [Header("攻击相关")]
-    public float AttackDis = 1f;
-    public float AttackCoolTime = 1f;
-    private float AttackTimer = 0f;
-    public bool canAttack = true;
     private float getHitTimer = 0f;
     public Transform attackerPos;
     public GameObject enemyAndPos;
-    public GameObject attackPrefeb;
-    public Transform attack1PosL;
-    public Transform attack1PosR;
 
     [Header("基础属性")]
     public float ATK = 10f;
@@ -37,6 +34,12 @@ public class EnemyBase : MonoBehaviour, IDamageable
     public float HPNow = 100f;
 
     public float speed = 1f;
+
+    private void Awake()
+    {
+        enemyAnimation = GetComponent<EnemyAnimation>();
+        enemyAttack = GetComponent<EnemyAttack>();
+    }
 
     public virtual void Start()
     {
@@ -106,7 +109,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     public virtual void idleEnter()
     {
-        am.SetBool("IsRun", false);
+        enemyAnimation.SetMove(false);
         if (stateOld == EnemyState.walk)
         {
             CancelInvoke(nameof(IdleToWalk));
@@ -124,7 +127,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     public virtual void walkEnter()
     {
-        am.SetBool("IsRun", true);
+        enemyAnimation.SetMove(true);
     }
     public virtual void walkUpdate()
     {
@@ -155,14 +158,14 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     public virtual void pursuitEnter()
     {
-        am.SetBool("IsRun", true);
+        enemyAnimation.SetMove(true);
     }
     public virtual void pursuitUpdate()
     {
         rb.linearVelocity = (targetPos.position - transform.position).normalized * speed;
         sr.flipX = rb.linearVelocity.x < 0;
 
-        if (Vector2.Distance(transform.position, targetPos.position) < AttackDis)
+        if (Vector2.Distance(transform.position, targetPos.position) < enemyAttack.attackDistance)
         {
             if (sr.flipX && (targetPos.position.x - transform.position.x) < 0)
             {
@@ -181,51 +184,22 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     public virtual void attackEnter()
     {
-        am.SetBool("IsRun", false);
+        enemyAttack.EnterAttack();
     }
     public virtual void attackUpdate()
     {
-        rb.linearVelocity = Vector2.zero;
-        if (canAttack)
-        {
-            if (Vector2.Distance(transform.position, targetPos.position) > AttackDis)//在攻击距离外
-            {
-                ChangeState(EnemyState.pursuit);
-            }
-            else if (sr.flipX && (targetPos.position.x - transform.position.x) > 0)//在攻击距离内但在反方向
-            {
-                ChangeState(EnemyState.pursuit);
-            }
-            else if (!sr.flipX && (targetPos.position.x - transform.position.x) < 0)//在攻击距离内但在反方向
-            {
-                ChangeState(EnemyState.pursuit);
-            }
-            else//在攻击距离内且方向正确
-            {
-                am.SetTrigger("Attack1");
-                canAttack = false;
-            }
-        }
-
-        if (AttackTimer < AttackCoolTime)
-        {
-            AttackTimer += Time.deltaTime;
-        }
-        else
-        {
-            canAttack = true;
-            AttackTimer = 0f;
-        }
+        enemyAttack.UpdateAttack();
     }
     public virtual void attackExit()
     {
-
+        enemyAttack.ExitAttack();
     }
 
     public virtual void getHitEnter()
     {
-        am.SetTrigger("GetHit");
-        am.SetBool("IsRun", false);
+        enemyAnimation.PlayHurt();
+        enemyAnimation.SetMove(false);
+
         rb.linearVelocity = Vector2.zero;
         getHitTimer = 0f;
     }
@@ -253,8 +227,9 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     public virtual void deadEnter()
     {
-        am.SetBool("IsRun", false);
-        am.SetTrigger("Dead");
+        enemyAnimation.SetMove(false);
+        enemyAnimation.PlayDead();
+
         Invoke(nameof(DestroyEnemyAndPos), 1f);
         Destroy(hpSlider.transform.parent.gameObject);//销毁怪物身上的UI
     }
@@ -274,8 +249,6 @@ public class EnemyBase : MonoBehaviour, IDamageable
     public virtual void AttackToWalk()
     {
         targetPos = pos1;
-        AttackTimer = 0f;
-        canAttack = true;
         ChangeState(EnemyState.walk);
     }
 
@@ -289,14 +262,14 @@ public class EnemyBase : MonoBehaviour, IDamageable
     /// 玩家进入警戒范围
     /// </summary>
     /// <param name="player">玩家</param>
-    public virtual void PlayerEnterPursuitBox(Player player)
+    public virtual void PlayerEnterPursuitBox(Transform target)
     {
         if (state == EnemyState.dead)
         {
             return;
         }
         CancelInvoke(nameof(IdleToWalk));
-        targetPos = player.transform;
+        targetPos = target;
         ChangeState(EnemyState.pursuit);
     }
 
@@ -304,11 +277,11 @@ public class EnemyBase : MonoBehaviour, IDamageable
     /// 玩家退出警戒范围
     /// </summary>
     /// <param name="player">玩家</param>
-    public virtual void PlayerExitPursuitBox(Player player)
+    public virtual void PlayerExitPursuitBox()
     {
         if (state == EnemyState.attack)
         {
-            Invoke(nameof(AttackToWalk), AttackCoolTime - AttackTimer);
+            Invoke(nameof(AttackToWalk), enemyAttack.attackCooldown - enemyAttack.AttackTimer);
         }
         else if (state == EnemyState.dead)
         {
@@ -344,21 +317,18 @@ public class EnemyBase : MonoBehaviour, IDamageable
         }
     }
 
-    #region 动画事件
-    public void Attack1()
-    {
-        GameObject go;
-        if (sr.flipX)//向左
-        {
-            go = Instantiate(attackPrefeb, attack1PosL.position, attack1PosL.rotation);
-            go.transform.localScale = attack1PosL.localScale;
-        }
-        else//向右
-        {
-            go = Instantiate(attackPrefeb, attack1PosR.position, attack1PosR.rotation);
-            go.transform.localScale = attack1PosR.localScale;
-        }
-        go.GetComponent<AttackPrefeb>().Init(false, ATK, transform);//初始化伤害触发器
-    }
+
+    #region ===== Property =====
+
+    public Rigidbody2D Rigidbody => rb;
+
+    public EnemyAnimation Animation => enemyAnimation;
+
+    public SpriteRenderer SpriteRenderer => sr;
+
+    public Transform Target => targetPos;
+
+    public float AttackPower => ATK;
+
     #endregion
 }

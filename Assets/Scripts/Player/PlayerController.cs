@@ -5,13 +5,19 @@ public class PlayerController : MonoBehaviour
     #region ===== Inspector =====
 
     [Header("移动设置")]
-
-    [Tooltip("玩家移动速度（单位：米/秒）")]
     public float moveSpeed = 6f;
+
+    #region ===== Dash =====
+    private float currentDashSpeed;
+    private float dashTimer;
+    private bool isDashing;
+    private Vector2 dashDirection;
+    #endregion
 
     #endregion
 
     #region ===== Component =====
+
     private Rigidbody2D rb;
     private PlayerState playerState;
 
@@ -19,15 +25,6 @@ public class PlayerController : MonoBehaviour
 
     #region ===== Runtime =====
     private Vector2 moveInput;
-    /*
-    * 玩家最后移动方向
-    *
-    * 用于：
-    *
-    * 1. 动画朝向
-    * 2. 攻击方向
-    * 3. WeaponPoint方向
-    */
     private Vector2 lastMoveDirection = Vector2.down;
 
     #endregion
@@ -47,6 +44,11 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         playerState = GetComponent<PlayerState>();
+    }
+
+    private void Update()
+    {
+        UpdateDash();
     }
 
     private void FixedUpdate()
@@ -87,35 +89,50 @@ public class PlayerController : MonoBehaviour
 
     #region ===== Movement =====
 
-    /// <summary>
-    /// 玩家移动
-    /// </summary>
     private void Move()
     {
+        if (isDashing)
+        {
+            rb.linearVelocity = dashDirection * currentDashSpeed;
+            return;
+        }
         if (playerState.IsState(PlayerState.State.Attack) || playerState.IsState(PlayerState.State.Hurt) || playerState.IsState(PlayerState.State.Dead))
+        { return; }
+        rb.linearVelocity = (moveInput * moveSpeed);
+    }
+
+    private void UpdateDash()
+    {
+        if (!isDashing)
         {
             return;
         }
-        rb.linearVelocity = (moveInput * moveSpeed);
+        dashTimer -= Time.deltaTime;
+        if (dashTimer <= 0)
+        {
+            EndDash();
+        }
+    }
+
+    public void StartDash(Vector2 direction, float speed, float duration)
+    {
+        isDashing = true;
+        dashDirection = direction.normalized;
+        currentDashSpeed = speed;
+        dashTimer = duration;
+    }
+
+    public void EndDash()
+    {
+        isDashing = false;
     }
 
     #endregion
 
     #region ===== Property =====
 
-    /// <summary>
-    /// 当前输入方向
-    /// </summary>
     public Vector2 MoveDirection => moveInput;
-
-    /// <summary>
-    /// 玩家最后朝向
-    /// </summary>
     public Vector2 LastMoveDirection => lastMoveDirection;
-
-    /// <summary>
-    /// 当前是否正在移动
-    /// </summary>
     public bool IsMoving => moveInput.sqrMagnitude > 0.01f;
 
     #endregion

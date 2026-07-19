@@ -26,6 +26,8 @@ public class WeaponHitBox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.gameObject.layer != LayerMask.NameToLayer("Enemy"))
+        { return; }
         IDamageable target = other.GetComponentInParent<IDamageable>();
         if (target == null)
         {

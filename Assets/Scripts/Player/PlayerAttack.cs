@@ -11,6 +11,7 @@ public class PlayerAttack : MonoBehaviour
     #region ===== Component =====
     private PlayerAnimation playerAnimation;
     private PlayerState playerState;
+    private Rigidbody2D rb;
     [SerializeField]
     private WeaponHitBox weapon;
 
@@ -30,6 +31,7 @@ public class PlayerAttack : MonoBehaviour
     {
         playerAnimation = GetComponent<PlayerAnimation>();
         playerState = GetComponent<PlayerState>();
+        rb = GetComponent<Rigidbody2D>();
         weapon = GetComponentInChildren<WeaponHitBox>();
         weapon.Init(transform);
     }
@@ -96,6 +98,7 @@ public class PlayerAttack : MonoBehaviour
     {
         isAttacking = true;
         playerState.ChangeState(PlayerState.State.Attack);
+        rb.linearVelocity = Vector2.zero;
         comboIndex++;
         if (comboIndex > maxCombo)
         {

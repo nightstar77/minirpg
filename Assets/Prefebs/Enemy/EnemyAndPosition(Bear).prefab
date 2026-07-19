@@ -176,7 +176,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.01303184, y: 0.013031721}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -186,7 +186,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 7, y: 3}
+  m_Size: {x: 3.064367, y: 1.7228742}
   m_EdgeRadius: 0
 --- !u!114 &2569412444435284979
 MonoBehaviour:
@@ -357,6 +357,8 @@ GameObject:
   - component: {fileID: 5871641748311247808}
   - component: {fileID: 5316214337057572013}
   - component: {fileID: 6156569527696800312}
+  - component: {fileID: 2455400067291365869}
+  - component: {fileID: 1224822956170271052}
   m_Layer: 7
   m_Name: Enemy-Bear
   m_TagString: Enemy
@@ -549,18 +551,42 @@ MonoBehaviour:
   pos1: {fileID: 742804253950469417}
   pos2: {fileID: 261884992579682035}
   targetPos: {fileID: 7639159627309963528}
-  AttackDis: 1
-  AttackCoolTime: 1
   canAttack: 1
   attackerPos: {fileID: 0}
   enemyAndPos: {fileID: 2704685077556759872}
-  attackPrefeb: {fileID: 7162028624813026947, guid: fecc7bb558e7d8d4da41851c7018c065, type: 3}
-  attack1PosL: {fileID: 8981548093572437909}
-  attack1PosR: {fileID: 5690843322304253420}
   ATK: 15
   HPMax: 150
   HPNow: 150
   speed: 1
+--- !u!114 &2455400067291365869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5316326724509765256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9e17b5dd8fdb5a4abed41d3c71d275a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimation
+--- !u!114 &1224822956170271052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5316326724509765256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2435842a5c6d0f4baf1edec5fcf1be1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
+  AttackDis: 1
+  AttackCoolTime: 1
+  attackPrefab: {fileID: 7162028624813026947, guid: fecc7bb558e7d8d4da41851c7018c065, type: 3}
+  attackPointLeft: {fileID: 8981548093572437909}
+  attackPointRight: {fileID: 5690843322304253420}
 --- !u!1 &6033733034587099572
 GameObject:
   m_ObjectHideFlags: 0
