@@ -25,7 +25,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     [Header("攻击相关")]
     private float getHitTimer = 0f;
-    public Transform attackerPos;
+    private Vector2 attackerDirection;
     public GameObject enemyAndPos;
 
     [Header("基础属性")]
@@ -209,7 +209,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
         //受到攻击后退
         if (getHitTimer <= 0.2f)
-        { rb.linearVelocity = (transform.position - attackerPos.position).normalized * 2f; }
+        { rb.linearVelocity = attackerDirection * -2f; }
         else
         { rb.linearVelocity = Vector2.zero; }
 
@@ -299,13 +299,13 @@ public class EnemyBase : MonoBehaviour, IDamageable
     /// 受到伤害
     /// </summary>
     /// <param name="damage"></param>
-    public virtual void TakeDamage(float damage, Transform attackPosition)
+    public virtual void TakeDamage(float damage, Vector2 attackDirection)
     {
         if (HPNow <= 0) { return; }
 
         HPNow -= damage;//受到伤害
         hpSlider.value = HPNow / HPMax;//血条变化
-        attackerPos = attackPosition;
+        attackerDirection = attackDirection;
 
         if (HPNow <= 0)
         {
@@ -314,6 +314,14 @@ public class EnemyBase : MonoBehaviour, IDamageable
         else
         {
             ChangeState(EnemyState.getHit);
+        }
+    }
+
+    public Transform TargetPos
+    {
+        get
+        {
+            return targetPos;
         }
     }
 

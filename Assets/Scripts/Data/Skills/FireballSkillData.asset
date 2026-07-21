@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19e6676d823c19046be5abb8d45482ce, type: 3}
+  m_Name: FireballSkillData
+  m_EditorClassIdentifier: Assembly-CSharp::FireballSkillData
+  skillName: Fireball
+  description: 
+  icon: {fileID: 0}
+  cooldown: 3
+  projectilePrefab: {fileID: 6230349118848612241, guid: 0cfb553925581f24482794399ca07274, type: 3}
+  damage: 20
+  speed: 8
+  lifetime: 3

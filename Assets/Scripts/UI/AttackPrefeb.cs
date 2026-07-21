@@ -5,7 +5,7 @@ public class AttackPrefeb : MonoBehaviour
     public float DestroyTime = 0.3f;
     public bool isPlayerAttack = true;
     public float attackDamage = 10f;
-    public Transform attackPos;
+    private Vector2 attackDirection;
 
     void Start()
     {
@@ -13,34 +13,40 @@ public class AttackPrefeb : MonoBehaviour
     }
 
     /// <summary>
-    /// ³õÊ¼»¯
+    /// åˆå§‹åŒ–
     /// </summary>
-    /// <param name="isPlayer">ÊÇ·ñÎªÍæ¼Ò¹¥»÷</param>
-    /// <param name="damage">ÉËº¦ÊıÖµ</param>
-    public void Init(bool isPlayer,float damage, Transform attackPosition)
+    /// <param name="isPlayer">æ˜¯å¦ä¸ºç©å®¶æ”»å‡»</param>
+    /// <param name="damage">ä¼¤å®³æ•°å€¼</param>
+    public void Init(bool isPlayer, float damage, Vector2 direction)
     {
         isPlayerAttack = isPlayer;
         attackDamage = damage;
-        attackPos = attackPosition;
+        attackDirection = direction.normalized;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (isPlayerAttack)
         {
-            if (collision.tag == "Enemy")
+            if (collision.CompareTag("Enemy"))
             {
-                collision.GetComponent<EnemyBase>().TakeDamage(attackDamage, attackPos);
+                IDamageable target = collision.GetComponent<IDamageable>();
+                if (target != null)
+                {
+                    target.TakeDamage(attackDamage, attackDirection);
+                }
             }
-            
         }
         else
         {
-            if(collision.tag == "Player")
+            if (collision.CompareTag("Player"))
             {
-                collision.GetComponent<Player>().TakeDamage(attackDamage, attackPos);
+                IDamageable target = collision.GetComponent<IDamageable>();
+                if (target != null)
+                {
+                    target.TakeDamage(attackDamage, attackDirection);
+                }
             }
         }
-
     }
 }

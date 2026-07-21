@@ -43,10 +43,6 @@ public class PlayerHealth : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            TakeDamage(10, GameObject.Find("Enemy-Bear").transform);
-        }
         UpdateInvincible();
     }
 

@@ -540,6 +540,7 @@ GameObject:
   - component: {fileID: 8520574479807079767}
   - component: {fileID: 7092158945035020729}
   - component: {fileID: 2202672696624102397}
+  - component: {fileID: 7135510497880291348}
   m_Layer: 0
   m_Name: EnemyTroll
   m_TagString: Enemy
@@ -724,7 +725,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyTroll
   rb: {fileID: 8520574479807079767}
-  am: {fileID: 2505674332659479025}
   sr: {fileID: 8423244099891424260}
   state: 1
   stateOld: 1
@@ -732,18 +732,28 @@ MonoBehaviour:
   pos1: {fileID: 315930583011764601}
   pos2: {fileID: 5918557036865866136}
   targetPos: {fileID: 2097058641045930014}
-  AttackDis: 2
-  AttackCoolTime: 1
-  canAttack: 1
-  attackerPos: {fileID: 0}
   enemyAndPos: {fileID: 6171357920603071358}
-  attackPrefeb: {fileID: 7162028624813026947, guid: fecc7bb558e7d8d4da41851c7018c065, type: 3}
-  attack1PosL: {fileID: 7837661318446276039}
-  attack1PosR: {fileID: 5086509280573433165}
   ATK: 30
   HPMax: 300
   HPNow: 300
   speed: 1.5
+--- !u!114 &7135510497880291348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5661802610961126597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2435842a5c6d0f4baf1edec5fcf1be1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
+  attackDistance: 1
+  attackCooldown: 1
+  attackPrefab: {fileID: 7162028624813026947, guid: fecc7bb558e7d8d4da41851c7018c065, type: 3}
+  attackPointLeft: {fileID: 7837661318446276039}
+  attackPointRight: {fileID: 5086509280573433165}
 --- !u!1 &5881915574454600332
 GameObject:
   m_ObjectHideFlags: 0

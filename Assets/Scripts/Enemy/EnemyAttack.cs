@@ -86,7 +86,8 @@ public class EnemyAttack : MonoBehaviour
             go = Instantiate(attackPrefab, attackPointRight.position, attackPointRight.rotation);
             go.transform.localScale = attackPointRight.localScale;
         }
-        go.GetComponent<AttackPrefeb>().Init(false, enemy.AttackPower, transform);
+        Vector2 direction = (enemy.TargetPos.position - transform.position).normalized;
+        go.GetComponent<AttackPrefeb>().Init(false, enemy.AttackPower, direction);
     }
 
 

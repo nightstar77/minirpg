@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e24cb09972d96944abfe299664f1d9ce, type: 3}
   m_Name: DashSkillData
   m_EditorClassIdentifier: Assembly-CSharp::DashSkillData
+  skillName: Dash
+  description: 
+  icon: {fileID: 0}
+  cooldown: 1
   dashSpeed: 12
   dashDuration: 0.2
-  cooldown: 1

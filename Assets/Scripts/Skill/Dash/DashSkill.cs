@@ -17,11 +17,8 @@ public class DashSkill : SkillBase
     {
         if (!CanUse()) { return; }
         StartCooldown();
-        playerController.StartDash(playerController.LastMoveDirection, data.dashSpeed, data.dashDuration);
+        DashContext context = new DashContext(playerController.LastMoveDirection, data.dashSpeed, data.dashDuration);
+        playerController.StartDash(context);
     }
 
-    private void StopDash()
-    {
-        playerController.EndDash();
-    }
 }

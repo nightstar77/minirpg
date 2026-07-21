@@ -43,7 +43,8 @@ public class WeaponHitBox : MonoBehaviour
             Debug.LogWarning("WeaponHitBox没有初始化攻击者");
             return;
         }
-        target.TakeDamage(damage, attacker);
+        Vector2 attackDirection = (other.transform.position - attacker.position).normalized;
+        target.TakeDamage(damage, attackDirection);
         Debug.Log("攻击检测到：" + other.name);
     }
     #endregion

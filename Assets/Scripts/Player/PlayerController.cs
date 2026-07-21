@@ -114,12 +114,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void StartDash(Vector2 direction, float speed, float duration)
+    public void StartDash(DashContext context)
     {
         isDashing = true;
-        dashDirection = direction.normalized;
-        currentDashSpeed = speed;
-        dashTimer = duration;
+        dashDirection = context.direction.normalized;
+        currentDashSpeed = context.speed;
+        dashTimer = context.duration;
     }
 
     public void EndDash()

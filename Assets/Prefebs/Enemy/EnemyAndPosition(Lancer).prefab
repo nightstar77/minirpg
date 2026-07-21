@@ -156,6 +156,7 @@ GameObject:
   - component: {fileID: 1502861286653162086}
   - component: {fileID: 5086612189586095195}
   - component: {fileID: 5982605261677692173}
+  - component: {fileID: 7035216136824104754}
   m_Layer: 0
   m_Name: Enemy-Lancer
   m_TagString: Enemy
@@ -340,7 +341,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyLancer
   rb: {fileID: 1502861286653162086}
-  am: {fileID: 53761049069753921}
   sr: {fileID: 8023838275458520858}
   state: 1
   stateOld: 1
@@ -348,18 +348,28 @@ MonoBehaviour:
   pos1: {fileID: 5048056447999103227}
   pos2: {fileID: 221400445122872985}
   targetPos: {fileID: 6884893085572415956}
-  AttackDis: 1
-  AttackCoolTime: 1
-  canAttack: 1
-  attackerPos: {fileID: 0}
   enemyAndPos: {fileID: 8927024493232133560}
-  attackPrefeb: {fileID: 7162028624813026947, guid: fecc7bb558e7d8d4da41851c7018c065, type: 3}
-  attack1PosL: {fileID: 6115612591124407364}
-  attack1PosR: {fileID: 7319706353083635863}
   ATK: 20
   HPMax: 65
   HPNow: 65
   speed: 3
+--- !u!114 &7035216136824104754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4762246534786438610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2435842a5c6d0f4baf1edec5fcf1be1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
+  attackDistance: 1
+  attackCooldown: 1
+  attackPrefab: {fileID: 7162028624813026947, guid: fecc7bb558e7d8d4da41851c7018c065, type: 3}
+  attackPointLeft: {fileID: 6115612591124407364}
+  attackPointRight: {fileID: 7319706353083635863}
 --- !u!1 &4818954318815084766
 GameObject:
   m_ObjectHideFlags: 0
