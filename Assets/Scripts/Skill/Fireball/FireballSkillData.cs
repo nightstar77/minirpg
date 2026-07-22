@@ -6,7 +6,8 @@ public class FireballSkillData : SkillData
     [Header("Fireball")]
     public GameObject projectilePrefab;
 
-    public float damage = 20f;
     public float speed = 8f;
     public float lifetime = 3f;
+
+    public SkillEffect[] effects;
 }

@@ -1,5 +1,13 @@
 using UnityEngine;
 
+public enum SkillType
+{
+    None,
+    Dash,
+    Fireball,
+    Explosion
+}
+
 /// <summary>
 /// 技能配置基类
 ///
@@ -7,6 +15,8 @@ using UnityEngine;
 /// </summary>
 public abstract class SkillData : ScriptableObject
 {
+    public SkillType skillType;
+
     [Header("基础信息")]
     public string skillName;
 

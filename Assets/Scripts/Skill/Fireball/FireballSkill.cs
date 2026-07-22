@@ -18,11 +18,12 @@ public class FireballSkill : SkillBase
 
     public override void Use()
     {
-        Debug.Log("Fireball释放");
         if (!CanUse())
         {
+            Debug.Log("Fireball冷却中");
             return;
         }
+        Debug.Log("Fireball释放");
 
         StartCooldown();
         Vector2 direction = playerController.LastMoveDirection;
@@ -31,6 +32,6 @@ public class FireballSkill : SkillBase
 
         FireballProjectile projectile = fireball.GetComponent<FireballProjectile>();
 
-        projectile.Init(direction, data.damage, data.speed);
+        projectile.Init(direction, data.speed, data.lifetime, data.effects);
     }
 }

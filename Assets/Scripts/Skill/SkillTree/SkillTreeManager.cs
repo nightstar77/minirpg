@@ -1,47 +1,48 @@
 using UnityEngine;
-using System.Collections.Generic;
-
 
 public class SkillTreeManager : MonoBehaviour
 {
-    [Header("技能点")]
-    public int skillPoints = 5;
+    [SerializeField]
+    private SkillController skillController;
 
-    [Header("技能节点")]
-    public List<SkillNodeData> skillNodes;
-
-    public bool UnlockSkill(SkillNodeData node)
+    private void Awake()
     {
-        Debug.Log("尝试解锁技能");
-        Debug.Log(node);
-        //已经解锁
+        skillController = GetComponent<SkillController>();
+    }
+
+    public bool UnlockSkill(SkillNodeData node, int slotIndex)
+    {
+        // 空节点检查
+        if (node == null)
+        {
+            return false;
+        }
+
+        // 已解锁
         if (node.unlocked)
         {
             Debug.Log("技能已经解锁");
             return false;
         }
 
-        //检查技能点
-        if (skillPoints < node.cost)
+        // 前置技能检查
+        if (node.prerequisite != null)
         {
-            Debug.Log("技能点不足");
-            return false;
+            if (!node.prerequisite.unlocked)
+            {
+                Debug.Log("前置技能未解锁");
+                return false;
+            }
         }
 
-        //检查前置技能
-        if (node.prerequisite != null &&
-           !node.prerequisite.unlocked)
-        {
-            Debug.Log("前置技能未解锁");
-            return false;
-        }
-
-        //扣除技能点
-        skillPoints -= node.cost;
-
-        //解锁
+        // 解锁
         node.unlocked = true;
-        Debug.Log($"解锁技能:{node.skill.skillName}");
+
+        // 装备技能
+        skillController.EquipSkill(slotIndex, node.skill.skillType);
+
+        Debug.Log("解锁技能:" + node.skill.skillName);
         return true;
     }
+
 }

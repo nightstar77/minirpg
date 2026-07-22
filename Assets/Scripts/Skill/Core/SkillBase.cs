@@ -4,6 +4,7 @@ using System;
 public abstract class SkillBase : MonoBehaviour
 {
     protected abstract SkillData Data { get; }
+    public SkillType SkillType => Data.skillType;
 
     public event Action OnSkillUsed;
     public event Action OnCooldownFinished;
@@ -47,7 +48,6 @@ public abstract class SkillBase : MonoBehaviour
             {
                 return 0;
             }
-
             return cooldownTimer / Data.cooldown;
         }
     }

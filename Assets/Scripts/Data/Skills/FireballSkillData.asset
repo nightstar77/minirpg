@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19e6676d823c19046be5abb8d45482ce, type: 3}
   m_Name: FireballSkillData
   m_EditorClassIdentifier: Assembly-CSharp::FireballSkillData
+  skillType: 2
   skillName: Fireball
   description: 
   icon: {fileID: 0}
   cooldown: 3
   projectilePrefab: {fileID: 6230349118848612241, guid: 0cfb553925581f24482794399ca07274, type: 3}
-  damage: 20
   speed: 8
-  lifetime: 3
+  lifetime: 1
+  effects:
+  - {fileID: 11400000, guid: dfbb30c6e45d1ff49a88412aa1a59428, type: 2}

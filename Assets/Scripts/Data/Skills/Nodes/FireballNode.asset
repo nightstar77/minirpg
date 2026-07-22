@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c582df80a3b376c4d8307adef13f354f, type: 3}
   m_Name: FireballNode
   m_EditorClassIdentifier: Assembly-CSharp::SkillNodeData
-  skill: {fileID: 0}
+  skill: {fileID: 11400000, guid: 5e43316395f6cab4b95288304fb3741c, type: 2}
   cost: 2
-  unlocked: 0
+  unlocked: 1
   prerequisite: {fileID: 11400000, guid: b2703843ea87adc45a3d12b7fe1ba841, type: 2}

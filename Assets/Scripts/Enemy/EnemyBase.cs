@@ -209,7 +209,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
         //受到攻击后退
         if (getHitTimer <= 0.2f)
-        { rb.linearVelocity = attackerDirection * -2f; }
+        { rb.linearVelocity = attackerDirection * 2f; }
         else
         { rb.linearVelocity = Vector2.zero; }
 
