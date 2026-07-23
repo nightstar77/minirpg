@@ -15,7 +15,7 @@ MonoBehaviour:
   skillType: 2
   skillName: Fireball
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: -927950369, guid: 800e2c90e20599e4daa9a0a8017254ed, type: 3}
   cooldown: 3
   projectilePrefab: {fileID: 6230349118848612241, guid: 0cfb553925581f24482794399ca07274, type: 3}
   speed: 8

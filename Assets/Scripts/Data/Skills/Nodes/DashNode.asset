@@ -15,4 +15,4 @@ MonoBehaviour:
   skill: {fileID: 11400000, guid: 7910db288bdaced49b46e6d8ab17501c, type: 2}
   cost: 1
   unlocked: 1
-  prerequisite: {fileID: 0}
+  prerequisites: []

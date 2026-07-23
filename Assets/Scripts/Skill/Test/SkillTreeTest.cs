@@ -14,7 +14,7 @@ public class SkillTreeTest : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            tree.UnlockSkill(fireballNode, 0);
+            tree.UnlockSkill(fireballNode);
         }
     }
 

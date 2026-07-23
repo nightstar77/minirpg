@@ -24,4 +24,9 @@ public class SkillSlot
         skill.Use();
     }
 
+    public void Clear()
+    {
+        skill = null;
+    }
+
 }

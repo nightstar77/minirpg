@@ -15,7 +15,7 @@ MonoBehaviour:
   skillType: 1
   skillName: Dash
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 1601600095, guid: 95d4d67bebda280498fa9f8da4bafe8c, type: 3}
   cooldown: 1
   dashSpeed: 12
   dashDuration: 0.2

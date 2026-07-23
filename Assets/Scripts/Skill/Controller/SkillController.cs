@@ -39,11 +39,8 @@ public class SkillController : MonoBehaviour
     public SkillBase GetSkill(SkillType type)
     {
         if (skillMap.TryGetValue(type, out SkillBase skill))
-        {
-            return skill;
-        }
+        { return skill; }
         Debug.LogWarning("没有找到技能：" + type);
-
         return null;
     }
 
@@ -54,7 +51,6 @@ public class SkillController : MonoBehaviour
         if (skill == null)
         {
             Debug.LogWarning("没有找到技能:" + type);
-
             return;
         }
 
@@ -76,6 +72,16 @@ public class SkillController : MonoBehaviour
             return;
         }
         skillSlots[slotIndex].Use();
+    }
+
+    public SkillBase GetSlotSkill(int index)
+    {
+        if (index < 0 || index >= skillSlots.Length)
+        {
+            Debug.LogWarning("技能槽索引错误");
+            return null;
+        }
+        return skillSlots[index].Skill;
     }
 
 }

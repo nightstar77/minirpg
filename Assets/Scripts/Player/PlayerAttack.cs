@@ -69,11 +69,11 @@ public class PlayerAttack : MonoBehaviour
     }
     private void ReadAttackInput()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.J))
         {
             HandleAttackInput();
         }
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetKeyDown(KeyCode.K))
         {
             CancelAttack();
         }
