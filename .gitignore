@@ -112,3 +112,5 @@ InitTestScene*.unity*
 *.asset
 /Assets/TextMesh Pro
 /Assets/TextMesh Pro
+Assets/TextMesh Pro/Resources/TMP Settings.asset
+/ProjectSettings
