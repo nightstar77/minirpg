@@ -16,3 +16,4 @@ MonoBehaviour:
   cost: 1
   unlocked: 1
   prerequisites: []
+  uiPosition: {x: 0, y: 0}

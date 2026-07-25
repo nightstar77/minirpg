@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SkillTreeManager : MonoBehaviour
@@ -5,6 +7,7 @@ public class SkillTreeManager : MonoBehaviour
     [Header("技能系统")]
     [SerializeField]
     private SkillController skillController;
+    public event Action OnSkillUnlocked;
 
     [Header("技能点")]
     [SerializeField]
@@ -21,7 +24,7 @@ public class SkillTreeManager : MonoBehaviour
 
     public SkillNodeState GetSkillState(SkillNodeData node)
     {
-        if (node.unlocked)
+        if (playerSkillInventory.HasSkill(node.skill.skillType))
         { return SkillNodeState.Unlocked; }
 
         if (!CheckPrerequisite(node))
@@ -43,7 +46,7 @@ public class SkillTreeManager : MonoBehaviour
         }
 
         // 已解锁
-        if (node.unlocked)
+        if (playerSkillInventory.HasSkill(node.skill.skillType))
         {
             Debug.Log("技能已经解锁");
             return false;
@@ -57,16 +60,17 @@ public class SkillTreeManager : MonoBehaviour
         }
 
         // 技能点检查
-        if (!skillPoint.SpendPoint(node.cost))
+        if (!skillPoint.CanSpend(node.cost))
         {
             Debug.Log("技能点不足");
             return false;
         }
 
         // 解锁
-        node.unlocked = true;
+        skillPoint.SpendPoint(node.cost);
         playerSkillInventory.AddSkill(node.skill.skillType);
 
+        OnSkillUnlocked?.Invoke();
         Debug.Log("解锁技能:" + node.skill.skillName);
         return true;
     }
@@ -78,13 +82,18 @@ public class SkillTreeManager : MonoBehaviour
 
         foreach (SkillNodeData pre in node.prerequisites)
         {
-            if (!pre.unlocked)
+            if (!playerSkillInventory.HasSkill(pre.skill.skillType))
             {
                 Debug.Log("前置技能未解锁:" + pre.skill.skillName);
                 return false;
             }
         }
         return true;
+    }
+
+    public bool HasSkill(SkillType type)
+    {
+        return playerSkillInventory.HasSkill(type);
     }
 
 }

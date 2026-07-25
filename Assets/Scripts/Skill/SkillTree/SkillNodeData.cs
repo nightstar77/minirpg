@@ -9,9 +9,10 @@ public class SkillNodeData : ScriptableObject
     [Header("解锁条件")]
     public int cost = 1;
 
-    public bool unlocked;
-
     [Header("前置技能")]
     public SkillNodeData[] prerequisites;
+
+    [Header("UI位置")]
+    public Vector2 uiPosition;
 
 }

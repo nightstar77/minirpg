@@ -32,9 +32,6 @@ public class SkillEquipManager : MonoBehaviour
 
         //装备
         skillController.EquipSkill(slotIndex, type);
-
-        Debug.Log("装备技能:" + type + " 到槽位:" + slotIndex);
-
         return true;
     }
 

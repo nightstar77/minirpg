@@ -1,20 +1,23 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
-public class SkillNodeUI : MonoBehaviour
+public class SkillNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("技能数据")]
     public SkillNodeData nodeData;
 
     [Header("UI")]
     public Image icon;
-    public TMP_Text skillName;
-    public TMP_Text lockText;
+
+    [SerializeField]
+    private SkillTooltipUI tooltip;
 
     [Header("管理器")]
-    public SkillTreeManager skillTreeManager;
+    private SkillTreeManager skillTreeManager;
     private Button button;
+    private SkillNodeState currentState;
 
     private void Awake()
     {
@@ -31,6 +34,7 @@ public class SkillNodeUI : MonoBehaviour
 
     private void OnClick()
     {
+        if (currentState != SkillNodeState.Locked) { return; }
         bool result = skillTreeManager.UnlockSkill(nodeData);
 
         if (result) { Refresh(); }
@@ -38,45 +42,42 @@ public class SkillNodeUI : MonoBehaviour
 
     public void Refresh()
     {
-        SkillNodeState state = skillTreeManager.GetSkillState(nodeData);
+        currentState = skillTreeManager.GetSkillState(nodeData);
 
-        switch (state)
+        switch (currentState)
         {
-
             case SkillNodeState.Unlocked:
-                lockText.text = "已解锁";
+                icon.color = Color.green;
                 break;
 
             case SkillNodeState.NeedPrerequisite:
-                lockText.text = "需要前置技能";
+                icon.color = Color.red;
                 break;
 
             case SkillNodeState.NeedPoint:
-                lockText.text = "技能点不足";
+                icon.color = Color.yellow;
                 break;
 
             case SkillNodeState.Locked:
-                lockText.text = "未解锁";
+                icon.color = Color.gray;
                 break;
         }
+        button.interactable = currentState == SkillNodeState.Locked;
 
         //图标
         icon.sprite = nodeData.skill.icon;
-
-        //名字
-        skillName.text = nodeData.skill.skillName;
-
-        //状态
-        if (nodeData.unlocked)
-        { lockText.text = "Unlock"; }
-        else
-        { lockText.text = "Lock"; }
     }
 
-    public void SetData(SkillNodeData data)
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        nodeData = data;
-        Refresh();
+        SkillNodeState state = skillTreeManager.GetSkillState(nodeData);
+        tooltip.Show(nodeData, state);
+        tooltip.Move(Input.mousePosition);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        tooltip.Hide();
     }
 
 }

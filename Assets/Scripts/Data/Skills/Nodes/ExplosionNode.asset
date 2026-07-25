@@ -15,4 +15,5 @@ MonoBehaviour:
   skill: {fileID: 0}
   cost: 3
   unlocked: 0
-  prerequisite: {fileID: 11400000, guid: 3b4a1e1a11c91e84ca0c233772b8043b, type: 2}
+  prerequisites: []
+  uiPosition: {x: -400, y: -400}

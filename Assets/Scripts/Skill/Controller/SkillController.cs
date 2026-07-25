@@ -1,16 +1,22 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class SkillController : MonoBehaviour
 {
+    public event Action OnSkillChanged;
+
     [Header("技能槽")]
     [SerializeField]
     private SkillSlot[] skillSlots;
-
     private Dictionary<SkillType, SkillBase> skillMap = new Dictionary<SkillType, SkillBase>();
+
+    [SerializeField]
+    private PlayerSkillInventory inventory;
 
     private void Awake()
     {
+        inventory = GetComponent<PlayerSkillInventory>();
         RegisterSkills();
     }
 
@@ -44,23 +50,40 @@ public class SkillController : MonoBehaviour
         return null;
     }
 
-    public void EquipSkill(int slotIndex, SkillType type)
+    public bool EquipSkill(int slotIndex, SkillType type)
     {
+        //检查玩家是否拥有技能
+        if (!inventory.HasSkill(type))
+        {
+            Debug.Log("玩家没有该技能:" + type);
+            return false;
+        }
+
         SkillBase skill = GetSkill(type);
 
         if (skill == null)
         {
             Debug.LogWarning("没有找到技能:" + type);
-            return;
+            return false;
         }
 
         if (slotIndex < 0 || slotIndex >= skillSlots.Length)
         {
-            return;
+            Debug.LogWarning("技能槽索引错误");
+            return false;
         }
 
+        if (skillSlots[slotIndex] == null)
+        {
+            Debug.LogWarning("技能槽为空:" + slotIndex);
+            return false;
+        }
         skillSlots[slotIndex].SetSkill(skill);
-        Debug.Log("装备技能:" + type + " 到槽位:" + slotIndex);
+
+        OnSkillChanged?.Invoke();
+
+        Debug.Log("装备技能:" + type + " 到槽位:" + slotIndex + " 当前对象:" + gameObject.name);
+        return true;
     }
 
     public void UseSkill(int slotIndex)
