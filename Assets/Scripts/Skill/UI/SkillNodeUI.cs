@@ -29,6 +29,11 @@ public class SkillNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         nodeData = data;
         skillTreeManager = manager;
+        SkillDragHandler drag = GetComponentInChildren<SkillDragHandler>();
+        if (drag != null)
+        {
+            drag.Init(data, icon);
+        }
         Refresh();
     }
 
@@ -78,6 +83,11 @@ public class SkillNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public void OnPointerExit(PointerEventData eventData)
     {
         tooltip.Hide();
+    }
+
+    public SkillNodeState CurrentState
+    {
+        get { return currentState; }
     }
 
 }

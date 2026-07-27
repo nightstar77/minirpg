@@ -1,8 +1,9 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
+using UnityEngine.EventSystems;
 
-public class SkillSlotUI : MonoBehaviour
+public class SkillSlotUI : MonoBehaviour, IDropHandler
 {
     [Header("对应技能槽")]
     [SerializeField]
@@ -11,12 +12,16 @@ public class SkillSlotUI : MonoBehaviour
     [Header("UI")]
     [SerializeField]
     private Image icon;
-
     [SerializeField]
     private Image cooldownMask;
+    [SerializeField]
+    private TMP_Text keyText;
+    [SerializeField]
+    private TMP_Text cooldownText;
 
     [SerializeField]
     private SkillController skillController;
+    private SkillBase currentSkill;
 
     private void Start()
     {
@@ -31,20 +36,20 @@ public class SkillSlotUI : MonoBehaviour
 
     public void Refresh()
     {
-        Debug.Log("UI使用SkillController:" + skillController.gameObject.name);
         SkillBase skill = skillController.GetSlotSkill(slotIndex);
 
         Debug.Log("刷新技能槽:" + slotIndex);
         if (skill == null)
         {
             Debug.Log("UI读取不到技能:" + slotIndex);
+            cooldownText.text = "";
             icon.enabled = false;
             return;
         }
         Debug.Log("UI读取到技能:" + skill.SkillData.skillName);
         icon.enabled = true;
         icon.sprite = skill.SkillData.icon;
-
+        keyText.text = skillController.GetSlotKey(slotIndex).ToString();
     }
 
     private void RefreshCooldown()
@@ -54,12 +59,27 @@ public class SkillSlotUI : MonoBehaviour
         if (skill == null)
         {
             cooldownMask.enabled = false;
+            cooldownText.text = "";
             return;
         }
 
+        //冷却遮盖效果
         float percent = skill.CooldownPercent;
-        cooldownMask.enabled = percent > 0;
-        cooldownMask.fillAmount = percent;
+        if (percent > 0.05f)
+        {
+            Debug.Log("冷却:" + skill.CurrentCooldown);
+            cooldownMask.enabled = true;
+            cooldownMask.fillAmount = percent;
+            cooldownText.enabled = true;
+            int time = Mathf.CeilToInt(skill.CurrentCooldown);
+            cooldownText.text = time.ToString();
+        }
+        else
+        {
+            cooldownMask.enabled = false;
+            cooldownText.enabled = false;
+            cooldownText.text = "";
+        }
     }
 
     private void OnDestroy()
@@ -68,6 +88,21 @@ public class SkillSlotUI : MonoBehaviour
         {
             skillController.OnSkillChanged -= Refresh;
         }
+    }
+
+    public void OnDrop(PointerEventData eventData)
+    {
+        SkillDragHandler drag = eventData.pointerDrag.GetComponent<SkillDragHandler>();
+
+        if (drag == null) { return; }
+        SkillBase skill = skillController.GetSkill(drag.SkillType);
+
+        if (skill == null)
+        {
+            Debug.Log("没有找到技能");
+            return;
+        }
+        skillController.EquipSkill(slotIndex, skill);
     }
 
 }

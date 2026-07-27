@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: 1805042510877235341}
   - component: {fileID: 619507151128208252}
   - component: {fileID: 4708751147205408238}
+  - component: {fileID: 9138603391006764401}
   m_Layer: 5
   m_Name: SkillNode
   m_TagString: Untagged
@@ -275,6 +276,18 @@ MonoBehaviour:
   nodeData: {fileID: 0}
   icon: {fileID: 8738867440813888697}
   tooltip: {fileID: 7921376505755132966}
+--- !u!114 &9138603391006764401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330266437582766560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbd7ebcd2d02f5345861330b80ff7035, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillDragHandler
 --- !u!1 &2828539450636070515
 GameObject:
   m_ObjectHideFlags: 0

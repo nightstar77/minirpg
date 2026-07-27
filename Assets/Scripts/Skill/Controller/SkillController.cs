@@ -86,6 +86,15 @@ public class SkillController : MonoBehaviour
         return true;
     }
 
+    public void EquipSkill(int slotIndex, SkillBase skill)
+    {
+        if (slotIndex < 0 || slotIndex >= skillSlots.Length) { return; }
+        skillSlots[slotIndex].SetSkill(skill);
+
+        OnSkillChanged?.Invoke();
+        Debug.Log("替换技能槽:" + slotIndex + " 技能:" + skill.SkillData.skillName);
+    }
+
     public void UseSkill(int slotIndex)
     {
         Debug.Log("调用技能槽:" + slotIndex);
@@ -105,6 +114,26 @@ public class SkillController : MonoBehaviour
             return null;
         }
         return skillSlots[index].Skill;
+    }
+
+    public int GetSlotIndexByKey(KeyCode key)
+    {
+        for (int i = 0; i < skillSlots.Length; i++)
+        {
+            if (skillSlots[i].Key == key)
+            { return i; }
+        }
+        return -1;
+    }
+
+    public KeyCode GetSlotKey(int index)
+    {
+        if (index < 0 || index >= skillSlots.Length)
+        {
+            Debug.LogWarning("技能槽索引错误");
+            return KeyCode.None;
+        }
+        return skillSlots[index].Key;
     }
 
 }

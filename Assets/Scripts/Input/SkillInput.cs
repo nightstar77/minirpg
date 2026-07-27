@@ -1,33 +1,36 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
-
 
 public class SkillInput : MonoBehaviour
 {
-
+    [SerializeField]
     private SkillController skillController;
 
+    private KeyCode[] skillKeys = { KeyCode.Q, KeyCode.E, KeyCode.R, KeyCode.F };
 
     private void Awake()
     {
-        skillController = GetComponent<SkillController>();
+        if (skillController == null)
+        { skillController = GetComponent<SkillController>(); }
     }
-
 
     private void Update()
     {
-
-        if (Keyboard.current.qKey.wasPressedThisFrame)
+        foreach (KeyCode key in skillKeys)
         {
-            skillController.UseSkill(0);
+            if (Input.GetKeyDown(key))
+            { UseSkillKey(key); }
         }
+    }
 
-
-        if (Keyboard.current.eKey.wasPressedThisFrame)
+    private void UseSkillKey(KeyCode key)
+    {
+        int index = skillController.GetSlotIndexByKey(key);
+        if (index == -1)
         {
-            skillController.UseSkill(1);
+            Debug.Log("没有绑定技能槽:" + key);
+            return;
         }
-
+        skillController.UseSkill(index);
     }
 
 }

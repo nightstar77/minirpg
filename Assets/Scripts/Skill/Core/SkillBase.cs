@@ -28,6 +28,7 @@ public abstract class SkillBase : MonoBehaviour
             OnCooldownFinished?.Invoke();
         }
     }
+
     public virtual bool CanUse()
     {
         return cooldownTimer <= 0;
