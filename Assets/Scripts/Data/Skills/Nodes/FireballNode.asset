@@ -14,6 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillNodeData
   skill: {fileID: 11400000, guid: 5e43316395f6cab4b95288304fb3741c, type: 2}
   cost: 2
-  prerequisites:
-  - {fileID: 11400000, guid: b2703843ea87adc45a3d12b7fe1ba841, type: 2}
+  prerequisites: []
   uiPosition: {x: 600, y: 0}

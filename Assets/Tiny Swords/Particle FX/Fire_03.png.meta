@@ -1,5 +1,12 @@
 fileFormatVersion: 2
 guid: 3b8e9a76bc158461cb287449c6e9b9ac
+AssetOrigin:
+  serializedVersion: 1
+  productId: 352566
+  packageName: Tiny Swords
+  packageVersion: 1.0
+  assetPath: Assets/Tiny Swords/Particle FX/Fire_03.png
+  uploadId: 844324
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -199,10 +206,10 @@ TextureImporter:
       name: Fire_03_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 24
         y: 0
-        width: 64
-        height: 64
+        width: 16
+        height: 8
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -492,10 +499,3 @@ TextureImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 352566
-  packageName: Tiny Swords
-  packageVersion: 1.0
-  assetPath: Assets/Tiny Swords/Particle FX/Fire_03.png
-  uploadId: 844324

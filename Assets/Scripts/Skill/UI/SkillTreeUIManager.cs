@@ -25,6 +25,7 @@ public class SkillTreeUIManager : MonoBehaviour
     private List<SkillNodeUI> nodeUIs = new List<SkillNodeUI>();
     private List<SkillLineData> skillLines = new List<SkillLineData>();
     private Dictionary<SkillNodeData, SkillNodeUI> nodeMap = new Dictionary<SkillNodeData, SkillNodeUI>();
+    public GameObject SkillTreePanel;
 
     [SerializeField]
     private GameObject linePrefab;
@@ -121,6 +122,11 @@ public class SkillTreeUIManager : MonoBehaviour
                 lineData.line.color = Color.gray;
             }
         }
+    }
+
+    public void ClosePanel()
+    {
+        SkillTreePanel.SetActive(false);
     }
 
 }

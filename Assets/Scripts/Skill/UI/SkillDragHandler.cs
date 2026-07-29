@@ -43,7 +43,7 @@ public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         }
         Debug.Log("开始拖拽技能:" + SkillType);
         //禁止原对象接收射线
-        //canvasGroup.blocksRaycasts = false;
+        canvasGroup.blocksRaycasts = false;
         //创建拖拽图片
         dragIcon = new GameObject("DragIcon");
         dragIcon.transform.SetParent(canvas.transform, false);
