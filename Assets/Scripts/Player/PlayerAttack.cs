@@ -80,12 +80,12 @@ public class PlayerAttack : MonoBehaviour
     }
     private void HandleAttackInput()
     {
+        if (playerState.IsState(PlayerState.State.Defend))
+        { return; }
         if (isAttacking)
         {
             if (canCombo)
-            {
-                attackQueued = true;
-            }
+            { attackQueued = true; }
             return;
         }
         StartComboAttack();

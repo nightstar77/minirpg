@@ -32,11 +32,9 @@ public class PlayerAnimation : MonoBehaviour
     #region ===== Animation =====
     private void UpdateMoveAnimation()
     {
-        // 如果角色已经死亡，不再更新移动动画。
-        if (playerState.IsState(PlayerState.State.Dead))
-        {
-            return;
-        }
+        // 如果角色已经死亡或防御状态，不再更新移动动画。
+        if (playerState.IsState(PlayerState.State.Dead) || playerState.IsState(PlayerState.State.Defend))
+        { return; }
 
         // IsMoving 是 PlayerController 提供的属性。
         // true：角色正在移动
@@ -85,15 +83,14 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetInteger("Combo", 0);
     }
 
-    /// <summary>
-    /// 播放普通攻击。
-    ///
-    /// Version0.6 暂时不用。
-    /// 保留接口，方便以后统一调用。
-    /// </summary>
-    public void PlayAttack()
+    public void PlayDefend()
     {
-        animator.SetTrigger("Attack");
+        animator.SetBool("Defend", true);
+    }
+
+    public void StopDefend()
+    {
+        animator.SetBool("Defend", false);
     }
 
     #endregion

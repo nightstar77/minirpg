@@ -2,14 +2,7 @@ using UnityEngine;
 public class PlayerState : MonoBehaviour
 {
     #region ===== State Enum =====
-    public enum State
-    {
-        Idle,
-        Move,
-        Attack,
-        Hurt,
-        Dead
-    }
+    public enum State { Idle, Move, Attack, Hurt, Defend, Dead }
 
     #endregion
 

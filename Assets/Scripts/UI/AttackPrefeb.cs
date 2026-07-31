@@ -31,10 +31,7 @@ public class AttackPrefeb : MonoBehaviour
             if (collision.CompareTag("Enemy"))
             {
                 IDamageable target = collision.GetComponent<IDamageable>();
-                if (target != null)
-                {
-                    target.TakeDamage(attackDamage, attackDirection);
-                }
+                target.TakeDamage(attackDamage, attackDirection);
             }
         }
         else
@@ -42,10 +39,7 @@ public class AttackPrefeb : MonoBehaviour
             if (collision.CompareTag("Player"))
             {
                 IDamageable target = collision.GetComponent<IDamageable>();
-                if (target != null)
-                {
-                    target.TakeDamage(attackDamage, attackDirection);
-                }
+                target.TakeDamage(attackDamage, attackDirection);
             }
         }
     }

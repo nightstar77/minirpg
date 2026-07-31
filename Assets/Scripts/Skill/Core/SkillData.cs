@@ -1,12 +1,6 @@
 using UnityEngine;
 
-public enum SkillType
-{
-    None,
-    Dash,
-    Fireball,
-    Explosion
-}
+public enum SkillType { None, Dash, Fireball, Explosion, Defense }
 
 /// <summary>
 /// 技能配置基类

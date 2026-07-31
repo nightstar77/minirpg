@@ -1,13 +1,13 @@
 using UnityEngine;
+using System;
 
-
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealth : MonoBehaviour, IDamageable
 {
     #region ===== Inspector =====
     [Header("生命设置")]
     public float maxHP = 100;
     [Header("击退设置")]
-    public float knockBackForce = 8f;
+    public float knockBackForce = 1f;
 
     #endregion
 
@@ -16,6 +16,8 @@ public class PlayerHealth : MonoBehaviour
     private bool isInvincible;                                          // 是否处于无敌时间
     private float invincibleTimer;                                      // 无敌时间计时器
     public float invincibleDuration = 0.8f;                             // 无敌持续时间
+    public event Action OnPlayerDead;
+    private bool isDefending;
 
     #endregion
 
@@ -49,7 +51,7 @@ public class PlayerHealth : MonoBehaviour
     /// <summary>
     /// 玩家受到伤害
     /// </summary>
-    public void TakeDamage(float damage, Transform attacker)
+    public void TakeDamage(float damage, Vector2 attackDirection)
     {
         //死亡后不能继续受伤
         if (playerState.IsState(PlayerState.State.Dead))
@@ -61,10 +63,13 @@ public class PlayerHealth : MonoBehaviour
             Debug.Log("无敌状态");
             return;
         }
-
+        if (isDefending)
+        {
+            Debug.Log("防御成功，抵挡伤害");
+            return;
+        }
         currentHP -= damage;
 
-        Debug.Log("玩家受到伤害:" + damage);
         StartInvincible();
         //取消当前攻击
         playerAttack.CancelAttack();
@@ -74,8 +79,8 @@ public class PlayerHealth : MonoBehaviour
         }
         else
         {
-            Hurt(attacker);
-            ApplyKnockBack(attacker);
+            Hurt();
+            ApplyKnockBack(attackDirection);
         }
     }
 
@@ -100,7 +105,7 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    private void Hurt(Transform attacker)
+    private void Hurt()
     {
         playerState.ChangeState(PlayerState.State.Hurt);
         playerAnimation.PlayHurt();
@@ -115,23 +120,33 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    private void ApplyKnockBack(Transform attacker)
+    private void ApplyKnockBack(Vector2 direction)
     {
-        if (attacker == null)
-        {
-            Debug.Log("攻击者为空");
-            return;
-        }
-
-        Vector2 direction = (transform.position - attacker.position).normalized;
-        Debug.Log("击退方向：" + direction);
-        rb.AddForce(direction * knockBackForce, ForceMode2D.Impulse);
+        rb.AddForce(direction.normalized * knockBackForce, ForceMode2D.Impulse);
     }
 
     private void Dead()
     {
         playerState.ChangeState(PlayerState.State.Dead);
         playerAnimation.PlayDead();
+
+        OnPlayerDead?.Invoke();
     }
 
+    public void StartDefend()
+    {
+        isDefending = true;
+        Debug.Log("进入防御状态");
+    }
+
+    public void EndDefend()
+    {
+        isDefending = false;
+        Debug.Log("结束防御状态");
+    }
+
+    public float CurrentHP
+    {
+        get { return currentHP; }
+    }
 }
