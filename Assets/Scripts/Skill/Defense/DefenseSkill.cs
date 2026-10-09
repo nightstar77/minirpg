@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.Playables;
 
+/// <summary>
+/// 防御技能：持续 defendTime 秒内免疫伤害，结束后恢复
+/// </summary>
 public class DefenseSkill : SkillBase
 {
     [SerializeField]
@@ -39,6 +42,7 @@ public class DefenseSkill : SkillBase
         playerHealth.StartDefend();
         playerAnimation.PlayDefend();
         playerState.ChangeState(PlayerState.State.Defend);
+        // defendTime 秒后自动结束防御
         Invoke(nameof(EndDefend), defendTime);
     }
 
@@ -46,6 +50,7 @@ public class DefenseSkill : SkillBase
     {
         playerHealth.EndDefend();
         playerAnimation.StopDefend();
+        // 仅在仍处于防御状态时恢复到 Idle
         if (playerState.IsState(PlayerState.State.Defend))
         {
             playerState.ChangeState(PlayerState.State.Idle);

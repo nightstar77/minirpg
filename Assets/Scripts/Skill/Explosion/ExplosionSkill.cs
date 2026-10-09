@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// 爆炸技能：以施法者为中心圆形范围伤害，生成爆炸特效预制体
+/// </summary>
 public class ExplosionSkill : SkillBase
 {
     [SerializeField]
@@ -29,7 +32,9 @@ public class ExplosionSkill : SkillBase
 
     private void CreateExplosion()
     {
+        // 生成爆炸特效
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        // 范围内所有敌人受伤，击退方向为爆炸中心→敌人
         Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, data.radius, enemyLayer);
         foreach (Collider2D enemy in enemies)
         {
@@ -40,12 +45,4 @@ public class ExplosionSkill : SkillBase
             }
         }
     }
-    /*
-    private void OnDrawGizmosSelected()
-    {
-        if (data == null) return;
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, data.radius);
-    }
-    */
 }

@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// 技能树节点配置：定义技能、解锁消耗、前置条件和在技能树面板中的位置
+/// </summary>
 [CreateAssetMenu(fileName = "SkillNode", menuName = "Game/Skill/Skill Node")]
 public class SkillNodeData : ScriptableObject
 {

@@ -1,17 +1,24 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 敌人状态枚举：idle闲置 → walk巡逻 → pursuit追击 → attack攻击 → getHit受伤 → dead死亡
+/// </summary>
 public enum EnemyState { idle, walk, pursuit, attack, getHit, dead }
-//public enum EnemyState { Idle, Patrol, Chase, Attack, Hurt, Dead }
 
+/// <summary>
+/// 敌人基类：实现有限状态机（FSM），管理巡逻、追击、攻击、受伤、死亡全流程。
+/// 子类（EnemyBear / EnemyLancer / EnemyTroll）可重写虚方法实现差异化行为。
+/// 实现 IDamageable 接口以统一受伤逻辑。
+/// </summary>
 [RequireComponent(typeof(EnemyAttack))]
 public class EnemyBase : MonoBehaviour, IDamageable
 {
     [Header("组件")]
     public Rigidbody2D rb;
-    //public Animator am;
     public SpriteRenderer sr;
     public EnemyState state = EnemyState.walk;
+    // 旧状态，在 ChangeState 时记录，供新状态的 Enter 方法判断来源
     public EnemyState stateOld = EnemyState.walk;
     public Slider hpSlider;
     protected EnemyAttack enemyAttack;
@@ -19,14 +26,20 @@ public class EnemyBase : MonoBehaviour, IDamageable
     private EnemyAnimation enemyAnimation;
 
     [Header("移动相关变量")]
+    // 巡逻路径的两个端点
     public Transform pos1;
     public Transform pos2;
+    // 当前移动目标（巡逻端点或玩家）
     public Transform targetPos;
 
     [Header("攻击相关")]
     private float getHitTimer = 0f;
+    // 受击击退方向，由 TakeDamage 传入
     private Vector2 attackerDirection;
+    // 敌人及其子对象的父级，死亡后整体销毁
     public GameObject enemyAndPos;
+    // 玩家是否在警戒范围内（由 EnemypursuitCollider 维护）
+    protected bool isPlayerInRange;
 
     [Header("基础属性")]
     public float ATK = 10f;
@@ -51,6 +64,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     public virtual void Update()
     {
+        // 根据当前状态分发到对应的 Update 方法
         switch (state)
         {
             case EnemyState.idle:
@@ -84,11 +98,10 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     }
 
-    #region ״̬状态机
+    #region 状态机
     /// <summary>
-    /// �л�Ϊ��״̬
+    /// 状态切换：先调用旧状态的 Exit，再调用新状态的 Enter
     /// </summary>
-    /// <param name="newState">��״̬</param>
     public virtual void ChangeState(EnemyState newState)
     {
         if (state == EnemyState.idle) { idleExit(); }
@@ -107,6 +120,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
         else if (state == EnemyState.dead) { deadEnter(); }
     }
 
+    // === idle 状态：原地停留，2秒后自动回到巡逻 ===
     public virtual void idleEnter()
     {
         enemyAnimation.SetMove(false);
@@ -125,6 +139,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     }
 
+    // === walk 状态：在 pos1 和 pos2 之间巡逻 ===
     public virtual void walkEnter()
     {
         enemyAnimation.SetMove(true);
@@ -134,20 +149,22 @@ public class EnemyBase : MonoBehaviour, IDamageable
         rb.linearVelocity = (targetPos.position - transform.position).normalized * speed;
         sr.flipX = rb.linearVelocity.x < 0;
 
-        if (Vector2.Distance(transform.position, pos1.position) < 0.1f)//����pos1
+        // 到达 pos1，切换目标为 pos2 并进入 idle
+        if (Vector2.Distance(transform.position, pos1.position) < 0.1f)
         {
-            if (targetPos == pos1)                       //��ɫĿ���pos1
+            if (targetPos == pos1)
             {
-                targetPos = pos2;                       //��ɫĿ���仯pos2
-                ChangeState(EnemyState.idle);           //��ɫ״̬�л�Ϊidle
+                targetPos = pos2;
+                ChangeState(EnemyState.idle);
             }
         }
-        else if (Vector2.Distance(transform.position, pos2.position) < 0.1f)//����pos2
+        // 到达 pos2，切换目标为 pos1 并进入 idle
+        else if (Vector2.Distance(transform.position, pos2.position) < 0.1f)
         {
-            if (targetPos == pos2)                       //��ɫĿ���pos2
+            if (targetPos == pos2)
             {
-                targetPos = pos1;                       //��ɫĿ���仯pos1
-                ChangeState(EnemyState.idle);           //��ɫ״̬�л�Ϊidle
+                targetPos = pos1;
+                ChangeState(EnemyState.idle);
             }
         }
     }
@@ -156,6 +173,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     }
 
+    // === pursuit 状态：追击玩家，进入攻击距离且朝向正确则切到 attack ===
     public virtual void pursuitEnter()
     {
         enemyAnimation.SetMove(true);
@@ -165,6 +183,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
         rb.linearVelocity = (targetPos.position - transform.position).normalized * speed;
         sr.flipX = rb.linearVelocity.x < 0;
 
+        // 在攻击距离内且朝向目标 → 进入攻击
         if (Vector2.Distance(transform.position, targetPos.position) < enemyAttack.attackDistance)
         {
             if (sr.flipX && (targetPos.position.x - transform.position.x) < 0)
@@ -182,6 +201,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     }
 
+    // === attack 状态：委托给 EnemyAttack 处理 ===
     public virtual void attackEnter()
     {
         enemyAttack.EnterAttack();
@@ -195,6 +215,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
         enemyAttack.ExitAttack();
     }
 
+    // === getHit 状态：播放受伤动画，短暂击退，1秒后恢复追击 ===
     public virtual void getHitEnter()
     {
         enemyAnimation.PlayHurt();
@@ -207,17 +228,25 @@ public class EnemyBase : MonoBehaviour, IDamageable
     {
         getHitTimer += Time.deltaTime;
 
-        //受到攻击后退
+        // 前0.2秒受击击退
         if (getHitTimer <= 0.2f)
         { rb.linearVelocity = attackerDirection * 2f; }
         else
         { rb.linearVelocity = Vector2.zero; }
 
-        //受到攻击一段时间后回到pursuit状态
+        // 1秒后根据玩家是否在警戒范围内，决定回到追击还是巡逻
+        // 远程技能（如火球）打中时玩家可能不在范围内，此时应继续巡逻而不是追击空气
         if (getHitTimer > 1f)
         {
             getHitTimer = 0f;
-            ChangeState(EnemyState.pursuit);
+            if (isPlayerInRange)
+            {
+                ChangeState(EnemyState.pursuit);
+            }
+            else
+            {
+                ChangeState(EnemyState.walk);
+            }
         }
     }
     public virtual void getHitExit()
@@ -225,13 +254,14 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     }
 
+    // === dead 状态：播放死亡动画，延迟销毁 ===
     public virtual void deadEnter()
     {
         enemyAnimation.SetMove(false);
         enemyAnimation.PlayDead();
 
         Invoke(nameof(DestroyEnemyAndPos), 1f);
-        Destroy(hpSlider.transform.parent.gameObject);//销毁怪物身上的UI
+        Destroy(hpSlider.transform.parent.gameObject); // 销毁怪物身上的血条UI
     }
     public virtual void deadUpdate()
     {
@@ -242,6 +272,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     }
 
+    // === 状态间转换的辅助方法 ===
     public virtual void IdleToWalk()
     {
         ChangeState(EnemyState.walk);
@@ -259,28 +290,29 @@ public class EnemyBase : MonoBehaviour, IDamageable
     #endregion
 
     /// <summary>
-    /// 玩家进入警戒范围
+    /// 玩家进入警戒范围，由 EnemypursuitCollider 触发
     /// </summary>
-    /// <param name="player">玩家</param>
     public virtual void PlayerEnterPursuitBox(Transform target)
     {
         if (state == EnemyState.dead)
         {
             return;
         }
+        isPlayerInRange = true;
         CancelInvoke(nameof(IdleToWalk));
         targetPos = target;
         ChangeState(EnemyState.pursuit);
     }
 
     /// <summary>
-    /// 玩家退出警戒范围
+    /// 玩家退出警戒范围，由 EnemypursuitCollider 触发
     /// </summary>
-    /// <param name="player">玩家</param>
     public virtual void PlayerExitPursuitBox()
     {
+        isPlayerInRange = false;
         if (state == EnemyState.attack)
         {
+            // 等当前攻击冷却结束后再回到巡逻
             Invoke(nameof(AttackToWalk), enemyAttack.attackCooldown - enemyAttack.AttackTimer);
         }
         else if (state == EnemyState.dead)
@@ -296,15 +328,14 @@ public class EnemyBase : MonoBehaviour, IDamageable
     }
 
     /// <summary>
-    /// 受到伤害
+    /// IDamageable 实现：扣血、更新血条、进入受击或死亡状态
     /// </summary>
-    /// <param name="damage"></param>
     public virtual void TakeDamage(float damage, Vector2 attackDirection)
     {
         if (HPNow <= 0) { return; }
 
-        HPNow -= damage;//受到伤害
-        hpSlider.value = HPNow / HPMax;//血条变化
+        HPNow -= damage;
+        hpSlider.value = HPNow / HPMax;
         attackerDirection = attackDirection;
 
         if (HPNow <= 0)

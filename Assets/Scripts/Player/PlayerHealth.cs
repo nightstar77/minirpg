@@ -1,6 +1,10 @@
 using UnityEngine;
 using System;
 
+/// <summary>
+/// 玩家生命系统：管理血量、无敌帧、击退、防御、死亡。
+/// 实现 IDamageable 接口，被攻击时由攻击方调用 TakeDamage。
+/// </summary>
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
     #region ===== Inspector =====
@@ -13,11 +17,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     #region ===== Runtime =====
     private float currentHP;
-    private bool isInvincible;                                          // 是否处于无敌时间
-    private float invincibleTimer;                                      // 无敌时间计时器
-    public float invincibleDuration = 0.8f;                             // 无敌持续时间
-    public event Action OnPlayerDead;
-    private bool isDefending;
+    private bool isInvincible;                  // 是否处于无敌时间
+    private float invincibleTimer;              // 无敌时间计时器
+    public float invincibleDuration = 0.8f;     // 无敌持续时间
+    public event Action OnPlayerDead;           // 玩家死亡事件，UI 等系统订阅
+    private bool isDefending;                   // 防御中，免疫伤害
 
     #endregion
 
@@ -49,20 +53,22 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     }
 
     /// <summary>
-    /// 玩家受到伤害
+    /// IDamageable 实现：处理受伤、无敌帧、击退、死亡判定
     /// </summary>
     public void TakeDamage(float damage, Vector2 attackDirection)
     {
-        //死亡后不能继续受伤
+        // 死亡后不再受伤
         if (playerState.IsState(PlayerState.State.Dead))
         {
             return;
         }
+        // 无敌帧内免疫伤害
         if (isInvincible)
         {
             Debug.Log("无敌状态");
             return;
         }
+        // 防御中免疫伤害
         if (isDefending)
         {
             Debug.Log("防御成功，抵挡伤害");
@@ -71,7 +77,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         currentHP -= damage;
 
         StartInvincible();
-        //取消当前攻击
+        // 受伤时强制取消当前攻击
         playerAttack.CancelAttack();
         if (currentHP <= 0)
         {
@@ -90,6 +96,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         invincibleTimer = 0;
         Debug.Log("进入无敌状态");
     }
+
     private void UpdateInvincible()
     {
         if (!isInvincible)
@@ -109,6 +116,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         playerState.ChangeState(PlayerState.State.Hurt);
         playerAnimation.PlayHurt();
+        // 0.5秒后从受伤状态恢复
         Invoke(nameof(RecoverFromHurt), 0.5f);
     }
 
@@ -133,12 +141,18 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         OnPlayerDead?.Invoke();
     }
 
+    /// <summary>
+    /// 开始防御，由 DefenseSkill 调用
+    /// </summary>
     public void StartDefend()
     {
         isDefending = true;
         Debug.Log("进入防御状态");
     }
 
+    /// <summary>
+    /// 结束防御，由 DefenseSkill 调用
+    /// </summary>
     public void EndDefend()
     {
         isDefending = false;

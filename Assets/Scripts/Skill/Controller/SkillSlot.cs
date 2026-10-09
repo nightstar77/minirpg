@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// 技能槽数据：绑定一个技能实例与对应快捷键，可序列化在 Inspector 中配置
+/// </summary>
 [System.Serializable]
 public class SkillSlot
 {

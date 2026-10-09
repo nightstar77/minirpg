@@ -1,4 +1,8 @@
 using UnityEngine;
+
+/// <summary>
+/// 爆炸特效：生成后自动在 lifeTime 秒后销毁
+/// </summary>
 public class ExplosionEffect : MonoBehaviour
 {
     [SerializeField]

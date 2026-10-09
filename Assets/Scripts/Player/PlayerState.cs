@@ -1,4 +1,8 @@
 using UnityEngine;
+
+/// <summary>
+/// 玩家状态管理：封装状态切换与查询，供其他脚本统一读写
+/// </summary>
 public class PlayerState : MonoBehaviour
 {
     #region ===== State Enum =====
@@ -14,18 +18,7 @@ public class PlayerState : MonoBehaviour
     #region ===== Public =====
 
     /// <summary>
-    /// 修改玩家状态。
-    ///
-    /// 参数：
-    /// newState —— 要切换到的新状态。
-    ///
-    /// 为什么要封装？
-    ///
-    /// 以后：
-    /// 切换状态时，
-    /// 可以统一播放音效、
-    /// 输出日志、
-    /// 发送事件。
+    /// 切换玩家状态（相同状态不重复切换）
     /// </summary>
     public void ChangeState(State newState)
     {
@@ -47,10 +40,7 @@ public class PlayerState : MonoBehaviour
     #region ===== Property =====
 
     /// <summary>
-    /// 获取当前状态（只读）。
-    ///
-    /// 外部可以读取，
-    /// 但不能直接修改。
+    /// 当前状态（只读），外部可读不可写
     /// </summary>
     public State CurrentState => currentState;
 

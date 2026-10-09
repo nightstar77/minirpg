@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// 玩家动画控制器：根据移动输入和状态播放对应动画，管理朝向翻转
+/// </summary>
 public class PlayerAnimation : MonoBehaviour
 {
     #region ===== Component =====
@@ -22,7 +25,6 @@ public class PlayerAnimation : MonoBehaviour
 
     private void Update()
     {
-        //Debug.Log(playerState.CurrentState);
         UpdateMoveAnimation();
         UpdateFacing();
     }
@@ -32,16 +34,12 @@ public class PlayerAnimation : MonoBehaviour
     #region ===== Animation =====
     private void UpdateMoveAnimation()
     {
-        // 如果角色已经死亡或防御状态，不再更新移动动画。
+        // 死亡或防御状态下不更新移动动画
         if (playerState.IsState(PlayerState.State.Dead) || playerState.IsState(PlayerState.State.Defend))
         { return; }
 
-        // IsMoving 是 PlayerController 提供的属性。
-        // true：角色正在移动
-        // false：角色静止
+        // 用移动输入的模长作为 Animator Speed 参数
         float speed = playerController.MoveDirection.magnitude;
-
-        // 设置 Animator 中的 Speed 参数。
         animator.SetFloat("Speed", speed);
     }
 
@@ -73,6 +71,9 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetTrigger("Dead");
     }
 
+    /// <summary>
+    /// 设置 Animator Combo 整数参数，驱动连击动画切换
+    /// </summary>
     public void PlayCombo(int combo)
     {
         animator.SetInteger("Combo", combo);

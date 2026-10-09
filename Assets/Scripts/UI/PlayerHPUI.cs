@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// 玩家血量 UI：实时更新血条滑块和文字，玩家死亡时隐藏
+/// </summary>
 public class PlayerHPUI : MonoBehaviour
 {
     [Header("UI")]
@@ -29,6 +32,7 @@ public class PlayerHPUI : MonoBehaviour
         slider.value = current / max;
         hpText.text = $"{current}/{max}";
     }
+
     private void Hide()
     {
         gameObject.SetActive(false);
@@ -36,6 +40,7 @@ public class PlayerHPUI : MonoBehaviour
 
     private void OnDestroy()
     {
+        // 取消订阅避免空引用
         if (playerHealth != null)
         {
             playerHealth.OnPlayerDead -= Hide;

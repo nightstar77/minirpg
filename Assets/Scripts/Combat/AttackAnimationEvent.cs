@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// 动画事件桥接器：将 Animator 中的 Animation Event 回调转发给 PlayerAttack。
+/// 挂载在玩家角色上，由动画剪辑中的 Event 触发。
+/// </summary>
 public class AttackAnimationEvent : MonoBehaviour
 {
 

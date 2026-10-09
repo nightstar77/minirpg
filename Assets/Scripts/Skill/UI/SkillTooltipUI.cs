@@ -1,6 +1,9 @@
 using UnityEngine;
 using TMPro;
 
+/// <summary>
+/// 技能信息提示框：鼠标悬停时显示技能名称、描述、消耗和状态
+/// </summary>
 public class SkillTooltipUI : MonoBehaviour
 {
     [Header("UI")]
@@ -29,9 +32,7 @@ public class SkillTooltipUI : MonoBehaviour
         gameObject.SetActive(true);
 
         skillName.text = node.skill.skillName;
-
         description.text = node.skill.description;
-
         cost.text = "消耗技能点:" + node.cost;
 
         switch (skillState)

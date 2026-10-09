@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// 测试脚本：按Delete键清除技能存档
+/// </summary>
 public class SkillSaveTest : MonoBehaviour
 {
 

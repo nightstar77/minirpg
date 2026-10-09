@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// 测试脚本：LeftShift 键直接触发冲刺技能（不走技能槽系统）
+/// </summary>
 public class PlayerSkill : MonoBehaviour
 {
     #region ===== Component =====

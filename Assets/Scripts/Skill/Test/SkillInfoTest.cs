@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// 测试脚本：按5键查询0号槽当前装备的技能
+/// </summary>
 public class SkillInfoTest : MonoBehaviour
 {
     public SkillController controller;

@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// 敌人攻击控制器：管理攻击冷却、距离判定与攻击预制体生成。
+/// 由 EnemyBase 的 attack 状态调用，不自行驱动状态切换以外的逻辑。
+/// </summary>
 public class EnemyAttack : MonoBehaviour
 {
     [Header("组件")]
@@ -27,35 +31,45 @@ public class EnemyAttack : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    /// <summary>
+    /// 进入攻击状态时调用，停止移动动画
+    /// </summary>
     public void EnterAttack()
     {
         enemy.Animation.SetMove(false);
     }
 
+    /// <summary>
+    /// 攻击状态每帧逻辑：判断距离与朝向，满足条件时播放攻击动画并进入冷却
+    /// </summary>
     public void UpdateAttack()
     {
         enemy.Rigidbody.linearVelocity = Vector2.zero;
         if (canAttack)
         {
-            if (Vector2.Distance(transform.position, enemy.Target.position) > attackDistance)//在攻击距离外
+            // 超出攻击距离 → 切回追击
+            if (Vector2.Distance(transform.position, enemy.Target.position) > attackDistance)
             {
                 enemy.ChangeState(EnemyState.pursuit);
             }
-            else if (enemy.SpriteRenderer.flipX && (enemy.Target.position.x - transform.position.x) > 0)//在攻击距离内但在反方向
+            // 朝向与目标不一致 → 切回追击调整方向
+            else if (enemy.SpriteRenderer.flipX && (enemy.Target.position.x - transform.position.x) > 0)
             {
                 enemy.ChangeState(EnemyState.pursuit);
             }
-            else if (!enemy.SpriteRenderer.flipX && (enemy.Target.position.x - transform.position.x) < 0)//在攻击距离内但在反方向
+            else if (!enemy.SpriteRenderer.flipX && (enemy.Target.position.x - transform.position.x) < 0)
             {
                 enemy.ChangeState(EnemyState.pursuit);
             }
-            else//在攻击距离内且方向正确
+            // 在攻击距离内且朝向正确 → 执行攻击
+            else
             {
                 enemy.Animation.PlayAttack();
                 canAttack = false;
             }
         }
 
+        // 攻击冷却计时
         if (attackTimer < attackCooldown)
         {
             attackTimer += Time.deltaTime;
@@ -67,11 +81,18 @@ public class EnemyAttack : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 离开攻击状态时重置冷却
+    /// </summary>
     public void ExitAttack()
     {
         attackTimer = 0f;
         canAttack = true;
     }
+
+    /// <summary>
+    /// 动画事件回调：根据朝向在对应位置生成攻击预制体
+    /// </summary>
     public void Attack1()
     {
         GameObject go;

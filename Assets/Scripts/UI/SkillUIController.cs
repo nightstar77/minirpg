@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 技能冷却 UI 控制器：订阅技能使用/冷却结束事件，通过 Image fillAmount 显示冷却进度
+/// </summary>
 public class SkillUIController : MonoBehaviour
 {
     [Header("绑定技能")]
@@ -56,7 +59,7 @@ public class SkillUIController : MonoBehaviour
             return;
         }
 
-
+        // 取消订阅避免空引用
         skill.OnSkillUsed -= StartCooldownUI;
 
         skill.OnCooldownFinished -= FinishCooldownUI;

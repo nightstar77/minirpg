@@ -5,7 +5,7 @@
 #
 # This template is maintained from the github/gitignore repository
 # and distributed under Creative Commons Zero v1.0 Universal license.
-
+#
 # This .gitignore file should be placed at the root of your Unity project directory
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
@@ -105,13 +105,17 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
-*.ttf
-*.meta
-*.asset
-*.asset
-*.asset
-/Assets/TextMesh Pro
-/Assets/TextMesh Pro
-Assets/TextMesh Pro/Resources/TMP Settings.asset
-/ProjectSettings
-/Assets/Scenes
+
+# ===== 第三方资源 / Third-party assets =====
+# 体积大且可从原来源重新导入的资源，不纳入版本控制
+# 重新导入方式：Window → TextMeshPro → Font Asset Creator 选择对应 .ttf 生成
+
+# 中文字体 SDF（江城律动宋 133MB，字库大导致文件巨大）
+Assets/TextMesh Pro/Resources/Fonts & Materials/*江城律动宋*.asset
+Assets/TextMesh Pro/Resources/Fonts & Materials/*江城律动宋*.asset.meta
+
+# 中文字体源文件（TTF）
+# 注意：*.ttf 在 .gitattributes 中配置了 LFS 追踪；
+# 如果你也不想用 LFS 存字体，把下面注释取消即可直接忽略
+# Assets/TextMesh Pro/Fonts/*.ttf
+# Assets/TextMesh Pro/Fonts/*.ttf.meta

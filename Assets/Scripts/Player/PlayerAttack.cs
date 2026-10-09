@@ -1,4 +1,9 @@
 ﻿using UnityEngine;
+
+/// <summary>
+/// 玩家攻击控制器：管理连击输入队列、HitBox 开关时机与动画协调。
+/// J键攻击，K键取消攻击。连击段数循环（超过 maxCombo 回到第1段）。
+/// </summary>
 public class PlayerAttack : MonoBehaviour
 {
     #region ===== Inspector =====
@@ -18,10 +23,10 @@ public class PlayerAttack : MonoBehaviour
     #endregion
 
     #region ===== Runtime =====
-    private bool isAttacking;
-    private int comboIndex;
-    private bool canCombo;
-    private bool attackQueued;
+    private bool isAttacking;     // 是否正在攻击动画中
+    private int comboIndex;       // 当前连击段数（1~maxCombo）
+    private bool canCombo;        // 连击窗口是否开启（由动画事件 EnableCombo 开启）
+    private bool attackQueued;    // 连击窗口内玩家是否输入了下一段攻击
 
     #endregion
 
@@ -44,6 +49,9 @@ public class PlayerAttack : MonoBehaviour
     #endregion
 
     #region ===== Input =====
+    /// <summary>
+    /// 动画事件回调：攻击开始时开启 HitBox
+    /// </summary>
     public void StartHitBox()
     {
         if (weapon == null)
@@ -59,6 +67,10 @@ public class PlayerAttack : MonoBehaviour
         weapon.ResetHitTargets();
         weapon.EnableHitBox();
     }
+
+    /// <summary>
+    /// 动画事件回调：攻击结束时关闭 HitBox
+    /// </summary>
     public void EndHitBox()
     {
         if (weapon == null)
@@ -67,6 +79,7 @@ public class PlayerAttack : MonoBehaviour
         }
         weapon.DisableHitBox();
     }
+
     private void ReadAttackInput()
     {
         if (Input.GetKeyDown(KeyCode.J))
@@ -78,10 +91,13 @@ public class PlayerAttack : MonoBehaviour
             CancelAttack();
         }
     }
+
     private void HandleAttackInput()
     {
+        // 防御中不能攻击
         if (playerState.IsState(PlayerState.State.Defend))
         { return; }
+        // 正在攻击中：如果连击窗口开启，缓存输入等待下一段
         if (isAttacking)
         {
             if (canCombo)
@@ -100,6 +116,7 @@ public class PlayerAttack : MonoBehaviour
         playerState.ChangeState(PlayerState.State.Attack);
         rb.linearVelocity = Vector2.zero;
         comboIndex++;
+        // 超过最大连击数，回到第1段
         if (comboIndex > maxCombo)
         {
             comboIndex = 1;
@@ -107,13 +124,20 @@ public class PlayerAttack : MonoBehaviour
         playerAnimation.PlayCombo(comboIndex);
     }
 
+    /// <summary>
+    /// 动画事件回调：开启连击输入窗口
+    /// </summary>
     public void EnableCombo()
     {
         canCombo = true;
     }
 
+    /// <summary>
+    /// 动画事件回调：当前段攻击结束，判断是否有缓存的连击输入
+    /// </summary>
     public void EndComboAttack()
     {
+        // 有缓存的连击输入 → 继续下一段攻击
         if (attackQueued)
         {
             attackQueued = false;
@@ -121,6 +145,7 @@ public class PlayerAttack : MonoBehaviour
             StartComboAttack();
             return;
         }
+        // 无连击输入 → 结束攻击
         isAttacking = false;
         comboIndex = 0;
         canCombo = false;
@@ -130,29 +155,19 @@ public class PlayerAttack : MonoBehaviour
 
     /// <summary>
     /// 强制取消当前攻击
-    ///
-    /// 使用场景：
-    ///
-    /// 1. 玩家受伤
-    /// 2. 玩家死亡
-    /// 3. 技能打断
+    /// 使用场景：1.玩家受伤 2.玩家死亡 3.技能打断
     /// </summary>
     public void CancelAttack()
     {
-        //关闭HitBox
         if (weapon != null)
         {
             weapon.DisableHitBox();
         }
-        //取消攻击状态
         isAttacking = false;
-        //取消连击
         comboIndex = 0;
         attackQueued = false;
         canCombo = false;
-        //重置Animator参数
         playerAnimation.ResetCombo();
-        //恢复玩家状态
         playerState.ChangeState(PlayerState.State.Idle);
         Debug.Log("攻击被取消");
     }
@@ -162,8 +177,7 @@ public class PlayerAttack : MonoBehaviour
     #region ===== Property =====
 
     /// <summary>
-    /// 当前是否正在攻击
-    /// 提供给其它脚本读取
+    /// 当前是否正在攻击，供其他脚本读取
     /// </summary>
     public bool IsAttacking => isAttacking;
 

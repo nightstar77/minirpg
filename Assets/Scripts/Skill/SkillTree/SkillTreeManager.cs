@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 技能树管理器：检查节点状态、消耗技能点解锁技能、验证前置条件
+/// </summary>
 public class SkillTreeManager : MonoBehaviour
 {
     [Header("技能系统")]
     [SerializeField]
     private SkillController skillController;
+    // 技能解锁事件，UI 订阅后刷新节点和连线
     public event Action OnSkillUnlocked;
 
     [Header("技能点")]
@@ -22,6 +26,9 @@ public class SkillTreeManager : MonoBehaviour
         playerSkillInventory = GetComponent<PlayerSkillInventory>();
     }
 
+    /// <summary>
+    /// 获取技能节点当前状态（已解锁/需前置/需技能点/可学习）
+    /// </summary>
     public SkillNodeState GetSkillState(SkillNodeData node)
     {
         if (playerSkillInventory.HasSkill(node.skill.skillType))
@@ -36,6 +43,9 @@ public class SkillTreeManager : MonoBehaviour
         return SkillNodeState.Locked;
     }
 
+    /// <summary>
+    /// 解锁技能：依次检查空节点、已解锁、前置、技能点，通过后消耗技能点并添加到背包
+    /// </summary>
     public bool UnlockSkill(SkillNodeData node)
     {
         // 空节点检查
@@ -66,7 +76,7 @@ public class SkillTreeManager : MonoBehaviour
             return false;
         }
 
-        // 解锁
+        // 解锁：消耗技能点 + 添加到背包
         skillPoint.SpendPoint(node.cost);
         playerSkillInventory.AddSkill(node.skill.skillType);
 
@@ -75,6 +85,9 @@ public class SkillTreeManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// 检查前置技能是否全部已解锁
+    /// </summary>
     private bool CheckPrerequisite(SkillNodeData node)
     {
         if (node.prerequisites == null)

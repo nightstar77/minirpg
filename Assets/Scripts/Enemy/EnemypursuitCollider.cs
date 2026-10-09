@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// 敌人警戒范围触发器：检测玩家进入/离开警戒区域，通知 EnemyBase 切换追击/巡逻状态
+/// </summary>
 public class EnemypursuitCollider : MonoBehaviour
 {
     public EnemyBase enemyScript;
