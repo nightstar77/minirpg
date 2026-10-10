@@ -6,7 +6,8 @@ namespace NPC
 {
     /// <summary>
     /// NPC 状态枚举
-    /// 参考 EnemyState 的设计：NPC 有站立和对话两种核心状态
+    /// NPC 有两种状态：站立（默认）和对话中
+    /// 两种状态下 NPC 都播放站立动画，不切换动作
     /// </summary>
     public enum NpcState
     {
@@ -16,24 +17,30 @@ namespace NPC
 
     /// <summary>
     /// NPC 基类（有限状态机）
-    /// 设计思路完全参考 EnemyBase：
-    /// - 枚举驱动的 FSM（Enter/Update/Exit 三段式）
-    /// - 触发器检测由子物体 NpcInteractCollider 负责，回调到本类
-    /// - 动画通过 NpcAnimation 组件控制，不直接操作 Animator
+    /// 
+    /// 设计说明：
+    /// - NPC 全程只播站立动画，不需要 Animator 状态切换
+    /// - 状态机主要用于管理"是否在对话中"的逻辑（交互提示显隐、输入响应等）
+    /// - 朝向通过直接翻转 SpriteRenderer 实现
     /// - 对话数据通过 NpcDialogueData（ScriptableObject）配置
     /// - UI 通过 DialogueUIManager 单例直接调用显示
     /// 
+    /// 参考项目现有模式：
+    /// - FSM 结构 → EnemyBase（Enter/Update/Exit 三段式）
+    /// - 触发器检测 → EnemypursuitCollider（子物体触发器 + 宿主回调）
+    /// - 数据驱动 → SkillData（ScriptableObject）
+    /// 
     /// 使用方式：
     /// 1. 把此脚本挂到 NPC 物体上
-    /// 2. 在 Inspector 拖拽 npcAnimation、dialogueData、interactPrompt 等引用
+    /// 2. 在 Inspector 拖拽 spriteRenderer、dialogueData、interactPrompt
     /// 3. 子物体放一个带 Collider2D + NpcInteractCollider 的交互检测区
     /// 4. 场景里要有 DialogueUIManager（对话框 UI）
     /// </summary>
     public class NpcBase : MonoBehaviour
     {
         [Header("核心组件（拖拽赋值）")]
-        [Tooltip("NPC 动画控制器")]
-        public NpcAnimation npcAnimation;
+        [Tooltip("NPC 的 SpriteRenderer，用于对话时朝向玩家（左右翻转）")]
+        public SpriteRenderer spriteRenderer;
 
         [Tooltip("对话数据（ScriptableObject），右键 Create → NPC → Npc Dialogue Data 创建")]
         public NpcDialogueData dialogueData;
@@ -129,11 +136,8 @@ namespace NPC
 
         private void IdleEnter()
         {
-            // 播站立动画
-            if (npcAnimation != null)
-            {
-                npcAnimation.PlayIdle();
-            }
+            // NPC 一直播站立动画，这里不需要切换动画
+            // 如果以后加动画，在这里加 PlayIdle()
         }
 
         private void IdleUpdate()
@@ -156,11 +160,11 @@ namespace NPC
             // 对话开始，重置行索引
             currentDialogueIndex = 0;
 
-            // 让 NPC 面向玩家
-            if (npcAnimation != null && playerTransform != null)
+            // 让 NPC 面向玩家（左右翻转 sprite）
+            if (spriteRenderer != null && playerTransform != null)
             {
-                npcAnimation.FaceTarget(playerTransform);
-                npcAnimation.PlayTalking();
+                bool faceRight = playerTransform.position.x > transform.position.x;
+                spriteRenderer.flipX = !faceRight;
             }
 
             // 隐藏交互提示（对话中不显示）
@@ -194,12 +198,6 @@ namespace NPC
 
         private void DialogueExit()
         {
-            // 对话结束，回到站立动画
-            if (npcAnimation != null)
-            {
-                npcAnimation.PlayIdle();
-            }
-
             // 隐藏对话框 UI
             if (DialogueUIManager.Instance != null)
             {
