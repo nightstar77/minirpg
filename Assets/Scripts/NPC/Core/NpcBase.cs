@@ -46,7 +46,7 @@ namespace NPC
         public NpcDialogueData dialogueData;
 
         [Header("交互提示（拖拽赋值）")]
-        [Tooltip("玩家靠近时显示的按键提示图标（NPC 头顶上方）")]
+        [Tooltip("玩家靠近时显示的按键提示图标（放在 Canvas 下，挂 InteractPromptFollow 脚本跟随 NPC）")]
         public GameObject interactPrompt;
 
         // 当前状态
