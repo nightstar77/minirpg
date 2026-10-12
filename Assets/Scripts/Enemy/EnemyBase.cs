@@ -48,6 +48,10 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     public float speed = 1f;
 
+    [Header("经验奖励")]
+    [Tooltip("击杀此怪物后玩家获得的经验值，按怪物类型在预制体上分别配置")]
+    public int expReward = 10;
+
     private void Awake()
     {
         enemyAnimation = GetComponent<EnemyAnimation>();
@@ -254,11 +258,14 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     }
 
-    // === dead 状态：播放死亡动画，延迟销毁 ===
+    // === dead 状态：播放死亡动画，延迟销毁，死亡瞬间发放经验 ===
     public virtual void deadEnter()
     {
         enemyAnimation.SetMove(false);
         enemyAnimation.PlayDead();
+
+        // 死亡瞬间给玩家发放经验（不等到销毁，避免对象销毁时引用丢失）
+        GrantExpToPlayer();
 
         Invoke(nameof(DestroyEnemyAndPos), 1f);
         Destroy(hpSlider.transform.parent.gameObject); // 销毁怪物身上的血条UI
@@ -286,6 +293,23 @@ public class EnemyBase : MonoBehaviour, IDamageable
     public virtual void DestroyEnemyAndPos()
     {
         Destroy(enemyAndPos);
+    }
+
+    /// <summary>
+    /// 死亡时给玩家发放经验
+    /// 通过 Tag 查找玩家（与 EnemypursuitCollider 的检测方式一致），
+    /// 不需要在每个怪物预制体上手动拖玩家引用
+    /// </summary>
+    protected virtual void GrantExpToPlayer()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null) return;
+
+        PlayerExperience playerExp = player.GetComponent<PlayerExperience>();
+        if (playerExp != null)
+        {
+            playerExp.GainExp(expReward);
+        }
     }
     #endregion
 

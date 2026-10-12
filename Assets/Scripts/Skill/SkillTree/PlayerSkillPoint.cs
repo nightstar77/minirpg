@@ -3,12 +3,14 @@ using System;
 
 /// <summary>
 /// 玩家技能点管理：消耗与获取技能点，变更时触发事件通知 UI 刷新
+/// 技能点获取方式：玩家每升 1 级由 PlayerExperience 自动发放 1 点
 /// </summary>
 public class PlayerSkillPoint : MonoBehaviour
 {
     [Header("技能点")]
+    [Tooltip("初始技能点数（默认 0，技能点通过升级获得；调试时可临时改大）")]
     [SerializeField]
-    private int skillPoints = 5;
+    private int skillPoints = 0;
     private int currentPoint;
 
     // 技能点变更事件，UI 订阅后刷新显示
