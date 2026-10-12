@@ -200,7 +200,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -288,6 +288,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd7ebcd2d02f5345861330b80ff7035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillDragHandler
+  dragOffset: {x: 30, y: -30}
+  dragAlpha: 0.4
+  dragIconPrefab: {fileID: 0}
+  popScale: 1.25
+  popDuration: 0.15
+  snapBackDuration: 0.2
+  fadeDuration: 0.1
+  canDrag: 0
 --- !u!1 &2828539450636070515
 GameObject:
   m_ObjectHideFlags: 0

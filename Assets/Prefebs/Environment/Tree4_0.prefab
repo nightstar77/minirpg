@@ -82,7 +82,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 150
+  m_SortingOrder: 95
   m_MaskInteraction: 0
   m_Sprite: {fileID: 2052243219, guid: 7649734177ed34f78a801612ab90a3a2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -200,3 +200,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95051c15e1fecc74aa46758fd8ed1bb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Plants
+  sr: {fileID: 0}

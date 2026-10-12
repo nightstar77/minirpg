@@ -550,12 +550,12 @@ MonoBehaviour:
   pos1: {fileID: 742804253950469417}
   pos2: {fileID: 261884992579682035}
   targetPos: {fileID: 7639159627309963528}
-  attackerPos: {fileID: 0}
   enemyAndPos: {fileID: 2704685077556759872}
-  ATK: 15
-  HPMax: 150
-  HPNow: 150
-  speed: 1
+  ATK: 35
+  HPMax: 200
+  HPNow: 200
+  speed: 2
+  expReward: 5
 --- !u!114 &2455400067291365869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -744,7 +744,7 @@ Transform:
   m_GameObject: {fileID: 7057506018663481009}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.23, y: -1.59, z: 0}
+  m_LocalPosition: {x: 3.97, y: 0.72, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -775,7 +775,7 @@ Transform:
   m_GameObject: {fileID: 7324413591926688489}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.24, y: -1.6, z: 0}
+  m_LocalPosition: {x: -4.03, y: 0.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
