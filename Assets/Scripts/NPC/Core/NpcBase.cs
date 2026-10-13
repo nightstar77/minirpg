@@ -318,6 +318,16 @@ namespace NPC
         {
             if (state != NpcState.dialogue) return;
             ChangeState(NpcState.idle);
+            OnDialogueEnded();
+        }
+
+        /// <summary>
+        /// 对话结束回调（虚方法，子类可重写）。
+        /// 例如强化商店 NPC 重写此方法，在对话结束后打开商店面板。
+        /// </summary>
+        protected virtual void OnDialogueEnded()
+        {
+            // 默认不做任何事
         }
 
         /// <summary>

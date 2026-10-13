@@ -163,4 +163,15 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         get { return currentHP; }
     }
+
+    /// <summary>
+    /// 提升最大生命值并同步回血（强化商店生命强化调用）
+    /// </summary>
+    public void IncreaseMaxHP(float amount)
+    {
+        if (amount <= 0) return;
+        maxHP += amount;
+        currentHP += amount;
+        Debug.Log("最大生命值提升 +" + amount + " 当前上限:" + maxHP);
+    }
 }

@@ -94,5 +94,16 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetBool("Defend", false);
     }
 
+    /// <summary>
+    /// 设置动画全局播放速度，用于攻击速度强化。
+    /// multiplier = 1.0 为正常速度，>1 整体加快（含攻击、移动等）。
+    /// 若只想让攻击动画加速而不影响移动，可在 Animator 攻击 clip 的
+    /// Speed 上勾选 Multiplier 指向 AttackSpeed 参数，并改用 SetFloat 设置。
+    /// </summary>
+    public void SetAnimationSpeed(float multiplier)
+    {
+        animator.speed = multiplier;
+    }
+
     #endregion
 }
