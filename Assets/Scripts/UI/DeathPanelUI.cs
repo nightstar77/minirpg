@@ -29,12 +29,7 @@ public class DeathPanelUI : MonoBehaviour
 
     private void Awake()
     {
-        // 默认隐藏面板
-        gameObject.SetActive(false);
-    }
-
-    private void Start()
-    {
+        // 先完成所有初始化（此时物体还是激活状态，Start 不会在禁用后执行）
         // 查找玩家身上的 PlayerHealth
         PlayerHealth player = FindObjectOfType<PlayerHealth>();
         if (player != null)
@@ -52,6 +47,9 @@ public class DeathPanelUI : MonoBehaviour
         {
             restartButton.onClick.AddListener(OnRestartClicked);
         }
+
+        // 最后隐藏面板
+        gameObject.SetActive(false);
     }
 
     private void OnDestroy()
