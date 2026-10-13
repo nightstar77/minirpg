@@ -17,6 +17,11 @@ public class SkillNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     [SerializeField]
     private SkillTooltipUI tooltip;
 
+    [Header("提示框位置")]
+    [Tooltip("提示框相对于技能图标的偏移（向下为负 Y）。可在 Inspector 调整到不遮挡图标的位置。")]
+    [SerializeField]
+    private Vector2 tooltipOffset = new Vector2(0, -80f);
+
     [Header("管理器")]
     private SkillTreeManager skillTreeManager;
     private Button button;
@@ -85,7 +90,9 @@ public class SkillNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         SkillNodeState state = skillTreeManager.GetSkillState(nodeData);
         tooltip.Show(nodeData, state);
-        tooltip.Move(Input.mousePosition);
+        // 提示框显示在技能图标下方指定位置，避免遮挡图标影响点击解锁
+        Vector2 iconPos = transform.position;
+        tooltip.Move(iconPos + tooltipOffset);
     }
 
     public void OnPointerExit(PointerEventData eventData)
