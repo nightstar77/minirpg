@@ -32,9 +32,11 @@ public class WeaponHitBox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 仅检测 Enemy 层
-        if (other.gameObject.layer != LayerMask.NameToLayer("Enemy"))
+        // 排除攻击者自身（武器 HitBox 可能与玩家自身碰撞体重叠）
+        if (attacker != null && other.transform.root == attacker.root)
         { return; }
+
+        // 命中规则：Enemy 层的敌人，或其他实现了 IDamageable 的可破坏物（如金矿）
         IDamageable target = other.GetComponentInParent<IDamageable>();
         if (target == null)
         {
