@@ -1,3 +1,4 @@
+using NPC;
 using UnityEngine;
 using UnityEngine.UI;
 
