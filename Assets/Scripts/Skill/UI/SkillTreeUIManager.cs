@@ -28,6 +28,11 @@ public class SkillTreeUIManager : MonoBehaviour
     public Transform nodeParent;
     public Transform lineParent;
     public GameObject skillNodePrefab;
+
+    [Header("提示框")]
+    [Tooltip("技能描述框相对于技能图标的偏移（向下为负 Y）。所有动态生成的节点统一使用此偏移。")]
+    public Vector2 tooltipOffset = new Vector2(0, -80f);
+
     private List<SkillNodeUI> nodeUIs = new List<SkillNodeUI>();
     private List<SkillLineData> skillLines = new List<SkillLineData>();
     // 节点数据 → UI 映射，用于查找连线端点
@@ -55,6 +60,8 @@ public class SkillTreeUIManager : MonoBehaviour
             RectTransform rect = obj.GetComponent<RectTransform>();
             rect.anchoredPosition = node.uiPosition;
             SkillNodeUI ui = obj.GetComponent<SkillNodeUI>();
+            // 统一设置提示框偏移，避免每个节点单独配置
+            ui.tooltipOffset = tooltipOffset;
             ui.Init(node, skillTreeManager);
 
             nodeUIs.Add(ui);

@@ -18,9 +18,8 @@ public class SkillNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     private SkillTooltipUI tooltip;
 
     [Header("提示框位置")]
-    [Tooltip("提示框相对于技能图标的偏移（向下为负 Y）。可在 Inspector 调整到不遮挡图标的位置。")]
-    [SerializeField]
-    private Vector2 tooltipOffset = new Vector2(0, -80f);
+    [Tooltip("提示框相对于技能图标的偏移（向下为负 Y）。由 SkillTreeUIManager 统一设置，也可在预制体上改默认值。")]
+    public Vector2 tooltipOffset = new Vector2(0, -80f);
 
     [Header("管理器")]
     private SkillTreeManager skillTreeManager;
