@@ -10,6 +10,10 @@ public class WeaponHitBox : MonoBehaviour
     #region ===== Inspector =====
     [Header("攻击设置")]
     public float damage = 10;
+
+    [Header("命中层级")]
+    [Tooltip("武器可命中的层（如 Enemy、Item）。在 Inspector 里勾选对应层。")]
+    public LayerMask targetLayers;
     #endregion
 
     #region ===== Component =====
@@ -36,7 +40,13 @@ public class WeaponHitBox : MonoBehaviour
         if (attacker != null && other.transform.root == attacker.root)
         { return; }
 
-        // 命中规则：Enemy 层的敌人，或其他实现了 IDamageable 的可破坏物（如金矿）
+        // 只命中目标层级（Enemy、Item 等）
+        if (!IsInTargetLayer(other.gameObject.layer))
+        {
+            return;
+        }
+
+        // 命中规则：目标需实现 IDamageable（敌人、金矿等）
         IDamageable target = other.GetComponentInParent<IDamageable>();
         if (target == null)
         {
@@ -61,6 +71,14 @@ public class WeaponHitBox : MonoBehaviour
     #endregion
 
     #region ===== Public =====
+    /// <summary>
+    /// 检查指定层是否在 targetLayers 中
+    /// </summary>
+    private bool IsInTargetLayer(int layer)
+    {
+        return (targetLayers.value & (1 << layer)) != 0;
+    }
+
     /// <summary>
     /// 初始化攻击者引用，在 PlayerAttack.Awake 中调用
     /// </summary>
