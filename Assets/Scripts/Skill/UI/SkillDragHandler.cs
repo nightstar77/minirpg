@@ -85,6 +85,9 @@ public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
         canvas = GetComponentInParent<Canvas>();
+
+        // canDrag 默认为 false，初始不拦截射线（让父物体 Button 可点击）
+        canvasGroup.blocksRaycasts = canDrag;
     }
 
     /// <summary>
@@ -105,10 +108,15 @@ public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     /// <summary>
     /// 设置是否允许拖拽
+    /// 不允许拖拽时关闭子物体的射线接收，让点击穿透到父物体的 Button（解锁技能）
     /// </summary>
     public void SetCanDrag(bool enabled)
     {
         canDrag = enabled;
+        if (canvasGroup != null)
+        {
+            canvasGroup.blocksRaycasts = enabled;
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
