@@ -10,7 +10,7 @@ using System.Collections;
 /// 带有弹性放大、回弹、透明度渐变等动画效果。
 /// canDrag 由外部控制（如技能树节点根据解锁状态、技能槽根据是否有技能）。
 /// </summary>
-public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     [Header("拖拽设置")]
     [Tooltip("拖拽图标相对鼠标的偏移量（像素），避免遮挡光标")]
@@ -85,9 +85,6 @@ public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
         canvas = GetComponentInParent<Canvas>();
-
-        // canDrag 默认为 false，初始不拦截射线（让父物体 Button 可点击）
-        canvasGroup.blocksRaycasts = canDrag;
     }
 
     /// <summary>
@@ -108,14 +105,24 @@ public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     /// <summary>
     /// 设置是否允许拖拽
-    /// 不允许拖拽时关闭子物体的射线接收，让点击穿透到父物体的 Button（解锁技能）
     /// </summary>
     public void SetCanDrag(bool enabled)
     {
         canDrag = enabled;
-        if (canvasGroup != null)
+    }
+
+    /// <summary>
+    /// 点击事件：未解锁技能（canDrag=false）时，把点击转发给父物体的 Button 触发解锁。
+    /// 已解锁技能（canDrag=true）时，点击由拖拽系统接管，不转发。
+    /// </summary>
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (canDrag) return;
+
+        Button parentButton = GetComponentInParent<Button>();
+        if (parentButton != null && parentButton.interactable)
         {
-            canvasGroup.blocksRaycasts = enabled;
+            parentButton.onClick.Invoke();
         }
     }
 
