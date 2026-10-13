@@ -72,6 +72,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (isDefending)
         {
             Debug.Log("防御成功，抵挡伤害");
+            // 播放格挡成功音效
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayBlock();
+            }
             return;
         }
         currentHP -= damage;

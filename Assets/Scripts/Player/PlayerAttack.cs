@@ -122,6 +122,12 @@ public class PlayerAttack : MonoBehaviour
             comboIndex = 1;
         }
         playerAnimation.PlayCombo(comboIndex);
+
+        // 播放攻击音效
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayAttack();
+        }
     }
 
     /// <summary>

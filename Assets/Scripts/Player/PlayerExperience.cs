@@ -112,6 +112,12 @@ public class PlayerExperience : MonoBehaviour
 
         Debug.Log("升级！当前等级:" + currentLevel);
 
+        // 播放升级音效
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayLevelUp();
+        }
+
         // 通知 UI 刷新等级显示
         OnLevelChanged?.Invoke(currentLevel);
     }
