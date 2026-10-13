@@ -20,10 +20,21 @@ public class SkillTooltipUI : MonoBehaviour
     private TMP_Text state;
 
     private RectTransform rect;
+    private CanvasGroup canvasGroup;
 
     private void Awake()
     {
         rect = GetComponent<RectTransform>();
+
+        // 确保提示框不拦截任何点击事件（不遮挡技能图标的点击解锁）
+        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+        {
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        }
+        canvasGroup.blocksRaycasts = false;
+        canvasGroup.interactable = false;
+
         Hide();
     }
 
