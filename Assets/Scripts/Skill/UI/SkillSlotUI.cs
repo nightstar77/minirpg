@@ -37,9 +37,27 @@ public class SkillSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     private void Awake()
     {
+        // 保证槽位永远有可点击区域：
+        // 空槽时 icon.enabled=false，被禁用的 Image 不接收射线，会导致空槽点不上。
+        // 所以根物体必须有一个常启用的 Image 专门负责接收点击（全透明也可以）。
+        Image clickCatcher = GetComponent<Image>();
+        if (clickCatcher == null)
+        {
+            clickCatcher = gameObject.AddComponent<Image>();
+            // 全透明，看不见但接收射线
+            clickCatcher.color = new Color(1f, 1f, 1f, 0f);
+        }
+        clickCatcher.raycastTarget = true;
+
+        // 子元素只做显示，全部关闭射线接收，避免遮挡/干扰点击与悬停判定
+        if (cooldownMask != null) { cooldownMask.raycastTarget = false; }
+        if (keyText != null) { keyText.raycastTarget = false; }
+        if (cooldownText != null) { cooldownText.raycastTarget = false; }
+
         // 记录原始图标颜色，用于悬停恢复
         if (icon != null)
         {
+            icon.raycastTarget = false;
             originalIconColor = icon.color;
         }
     }
