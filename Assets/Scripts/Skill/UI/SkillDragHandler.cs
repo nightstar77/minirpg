@@ -10,7 +10,7 @@ using System.Collections;
 /// 带有弹性放大、回弹、透明度渐变等动画效果。
 /// canDrag 由外部控制（如技能树节点根据解锁状态、技能槽根据是否有技能）。
 /// </summary>
-public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
+public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [Header("拖拽设置")]
     [Tooltip("拖拽图标相对鼠标的偏移量（像素），避免遮挡光标")]
@@ -85,6 +85,9 @@ public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
         canvas = GetComponentInParent<Canvas>();
+
+        // canDrag 默认为 false：初始禁用本组件，避免拖拽接口吞掉父物体 Button 的点击
+        enabled = canDrag;
     }
 
     /// <summary>
@@ -104,26 +107,15 @@ public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     }
 
     /// <summary>
-    /// 设置是否允许拖拽
+    /// 设置是否允许拖拽。
+    /// 关键：同时禁用/启用本组件。被禁用的 MonoBehaviour 不接收任何事件接口，
+    /// 否则 IBeginDragHandler 会在鼠标轻微移动时触发，导致 Unity 判定为拖拽、取消点击，
+    /// 父物体 Button（解锁技能）永远收不到 OnPointerClick。
     /// </summary>
     public void SetCanDrag(bool enabled)
     {
         canDrag = enabled;
-    }
-
-    /// <summary>
-    /// 点击事件：未解锁技能（canDrag=false）时，把点击转发给父物体的 Button 触发解锁。
-    /// 已解锁技能（canDrag=true）时，点击由拖拽系统接管，不转发。
-    /// </summary>
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (canDrag) return;
-
-        Button parentButton = GetComponentInParent<Button>();
-        if (parentButton != null && parentButton.interactable)
-        {
-            parentButton.onClick.Invoke();
-        }
+        this.enabled = enabled;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
