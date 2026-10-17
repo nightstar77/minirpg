@@ -239,6 +239,7 @@ GameObject:
   - component: {fileID: 2364932952060517604}
   - component: {fileID: 570827063845732816}
   - component: {fileID: 2280488537440115410}
+  - component: {fileID: 2141230093238103466}
   - component: {fileID: 6675931210823093397}
   - component: {fileID: 9149358919592900913}
   - component: {fileID: 3879315140429939674}
@@ -250,7 +251,6 @@ GameObject:
   - component: {fileID: 7671085303168022772}
   - component: {fileID: 3998987611216239388}
   - component: {fileID: 4095691469091833158}
-  - component: {fileID: 4139774311792750916}
   - component: {fileID: 5271202540669787997}
   - component: {fileID: 5687252445708757801}
   - component: {fileID: 5286659005912611360}
@@ -509,6 +509,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
   maxCombo: 2
   weapon: {fileID: 2919191528928056792}
+--- !u!114 &2141230093238103466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6138305168999243740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8900d889082f82f458762526393a52e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDefense
 --- !u!114 &6675931210823093397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -666,20 +678,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c3e132f0431efe44b8f94213008e1fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSkillInventory
---- !u!114 &4139774311792750916
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6138305168999243740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c195c571fc7485a48ac409538d705fda, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SkillEquipManager
-  inventory: {fileID: 4095691469091833158}
-  skillController: {fileID: 2574702955903283333}
 --- !u!114 &5271202540669787997
 MonoBehaviour:
   m_ObjectHideFlags: 0

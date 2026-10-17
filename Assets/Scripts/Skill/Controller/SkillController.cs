@@ -169,19 +169,6 @@ public class SkillController : MonoBehaviour
         return skillSlots[index].Skill;
     }
 
-    /// <summary>
-    /// 按快捷键查找对应槽位索引，未找到返回 -1
-    /// </summary>
-    public int GetSlotIndexByKey(KeyCode key)
-    {
-        for (int i = 0; i < skillSlots.Length; i++)
-        {
-            if (skillSlots[i].Key == key)
-            { return i; }
-        }
-        return -1;
-    }
-
     public KeyCode GetSlotKey(int index)
     {
         if (index < 0 || index >= skillSlots.Length)

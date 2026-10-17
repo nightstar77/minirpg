@@ -555,7 +555,7 @@ MonoBehaviour:
   HPMax: 200
   HPNow: 200
   speed: 2
-  expReward: 5
+  expReward: 10
 --- !u!114 &2455400067291365869
 MonoBehaviour:
   m_ObjectHideFlags: 0
