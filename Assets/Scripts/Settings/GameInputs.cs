@@ -16,7 +16,6 @@ public static class GameInputs
     public enum Action
     {
         Attack,       // 攻击
-        CancelAttack, // 取消攻击
         Defend,       // 防御
         Skill0,       // 技能槽 0
         Skill1,       // 技能槽 1
@@ -40,7 +39,6 @@ public static class GameInputs
     private static readonly Dictionary<Action, KeyCode> defaults = new Dictionary<Action, KeyCode>
     {
         { Action.Attack, KeyCode.J },
-        { Action.CancelAttack, KeyCode.K },
         { Action.Defend, KeyCode.K },
         { Action.Skill0, KeyCode.Q },
         { Action.Skill1, KeyCode.E },
@@ -49,7 +47,8 @@ public static class GameInputs
     };
 
     private static Dictionary<Action, KeyCode> bindings;
-    private const string SaveKey = "GameKeyBindings";
+    // v2：移除 CancelAttack 后枚举值整体前移，旧存档的动作索引会错位，换 key 废弃旧数据
+    private const string SaveKey = "GameKeyBindings_v2";
 
     /// <summary>
     /// 绑定变更事件（改键后 UI 刷新用）。

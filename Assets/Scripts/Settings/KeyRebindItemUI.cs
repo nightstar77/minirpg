@@ -149,7 +149,6 @@ public class KeyRebindItemUI : MonoBehaviour
         switch (action)
         {
             case GameInputs.Action.Attack: return "攻击";
-            case GameInputs.Action.CancelAttack: return "取消攻击";
             case GameInputs.Action.Defend: return "防御";
             case GameInputs.Action.Skill0: return "技能 1";
             case GameInputs.Action.Skill1: return "技能 2";
