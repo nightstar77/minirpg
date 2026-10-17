@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// 技能槽 UI：显示技能图标与快捷键，实时更新冷却遮罩。
+/// 技能槽 UI：显示技能图标与快捷键，冷却时显示剩余时间（0.1 秒精度）。
 /// 点击槽位 → 弹出技能选择面板，选择已解锁技能装备到本槽。
 /// 悬停时高亮显示。
 /// </summary>
@@ -18,11 +18,9 @@ public class SkillSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     [SerializeField]
     private Image icon;
     [SerializeField]
-    private Image cooldownMask;        // 冷却遮罩，fillAmount 控制遮盖比例
-    [SerializeField]
     private TMP_Text keyText;
     [SerializeField]
-    private TMP_Text cooldownText;     // 冷却剩余秒数文字
+    private TMP_Text cooldownText;     // 冷却剩余时间文字（0.1s 精度）
 
     [Header("悬停效果")]
     [Tooltip("悬停时图标颜色（轻微变亮）")]
@@ -50,7 +48,6 @@ public class SkillSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         clickCatcher.raycastTarget = true;
 
         // 子元素只做显示，全部关闭射线接收，避免遮挡/干扰点击与悬停判定
-        if (cooldownMask != null) { cooldownMask.raycastTarget = false; }
         if (keyText != null) { keyText.raycastTarget = false; }
         if (cooldownText != null) { cooldownText.raycastTarget = false; }
 
@@ -97,24 +94,20 @@ public class SkillSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
         if (skill == null)
         {
-            cooldownMask.enabled = false;
+            cooldownText.enabled = false;
             cooldownText.text = "";
             return;
         }
 
-        // 冷却遮罩按比例填充，同时显示剩余秒数
-        float percent = skill.CooldownPercent;
-        if (percent > 0.05f)
+        // 冷却剩余时间，0.1 秒精度（如 3.2），低于 0.05s 视为冷却结束
+        float remaining = skill.CurrentCooldown;
+        if (remaining > 0.05f)
         {
-            cooldownMask.enabled = true;
-            cooldownMask.fillAmount = percent;
             cooldownText.enabled = true;
-            int time = Mathf.CeilToInt(skill.CurrentCooldown);
-            cooldownText.text = time.ToString();
+            cooldownText.text = remaining.ToString("F1");
         }
         else
         {
-            cooldownMask.enabled = false;
             cooldownText.enabled = false;
             cooldownText.text = "";
         }
