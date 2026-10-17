@@ -68,7 +68,13 @@ public static class GameInputs
     public static KeyCode GetKey(Action action)
     {
         EnsureLoaded();
-        return bindings[action];
+        // 防御：场景里序列化的旧枚举值可能在枚举变更后失效，不抛异常而是返回 None
+        if (!bindings.TryGetValue(action, out KeyCode code))
+        {
+            Debug.LogWarning($"[GameInputs] 无效的动作: {(int)action}（检查 KeyRebindItemUI 的 Action 下拉是否需要重选）");
+            return KeyCode.None;
+        }
+        return code;
     }
 
     /// <summary>
