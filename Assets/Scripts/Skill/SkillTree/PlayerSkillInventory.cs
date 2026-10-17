@@ -59,7 +59,26 @@ public class PlayerSkillInventory : MonoBehaviour
 
         SkillSaveWrapper data = JsonUtility.FromJson<SkillSaveWrapper>(json);
 
-        unlockedSkills = data.skills;
+        unlockedSkills = new List<SkillType>();
+        if (data?.skills != null)
+        {
+            foreach (SkillType type in data.skills)
+            {
+                // 过滤掉已删除/无效的技能类型（如旧存档残留的 Defense），
+                // 避免 GetSkill 报"没有找到技能"
+                if (!System.Enum.IsDefined(typeof(SkillType), type))
+                {
+                    Debug.Log($"[PlayerSkillInventory] 忽略无效技能存档: {(int)type}");
+                    continue;
+                }
+                if (!unlockedSkills.Contains(type))
+                {
+                    unlockedSkills.Add(type);
+                }
+            }
+            // 清理后的结果写回，旧数据只处理一次
+            Save();
+        }
     }
 
     // JSON 序列化包装类
