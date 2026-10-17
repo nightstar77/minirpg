@@ -90,8 +90,8 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = dashDirection * currentDashSpeed;
             return;
         }
-        // 攻击/受伤/死亡时禁止移动
-        if (playerState.IsState(PlayerState.State.Attack) || playerState.IsState(PlayerState.State.Hurt) || playerState.IsState(PlayerState.State.Dead))
+        // 攻击/受伤/死亡/防御时禁止移动
+        if (playerState.IsState(PlayerState.State.Attack) || playerState.IsState(PlayerState.State.Hurt) || playerState.IsState(PlayerState.State.Dead) || playerState.IsState(PlayerState.State.Defend))
         { return; }
         rb.linearVelocity = (moveInput * moveSpeed);
     }

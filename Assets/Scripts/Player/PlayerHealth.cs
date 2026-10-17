@@ -147,7 +147,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     }
 
     /// <summary>
-    /// 开始防御，由 DefenseSkill 调用
+    /// 开始防御，由 PlayerDefense 调用
     /// </summary>
     public void StartDefend()
     {
@@ -156,7 +156,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     }
 
     /// <summary>
-    /// 结束防御，由 DefenseSkill 调用
+    /// 结束防御，由 PlayerDefense 调用
     /// </summary>
     public void EndDefend()
     {

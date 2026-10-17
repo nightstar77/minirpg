@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 
 /// <summary>
-/// 技能基类：所有具体技能（Dash/Fireball/Explosion/Defense）继承此类。
+/// 技能基类：所有具体技能（Dash/Fireball/Explosion）继承此类。
 /// 提供冷却计时、事件通知和可用性检查的通用框架。
 /// 子类只需实现 Data 属性和 Use() 方法。
 /// </summary>
