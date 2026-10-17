@@ -98,6 +98,10 @@ public class SkillNodeUI : MonoBehaviour,
     /// </summary>
     public void OnPointerDown(PointerEventData eventData)
     {
+        // 必须实时查询状态，不能用缓存的 currentState：
+        // 升级获得技能点后节点不会自动 Refresh，缓存可能停留在 NeedPoint，
+        // 导致明明可学习却永远跳过解锁
+        currentState = skillTreeManager.GetSkillState(nodeData);
         Debug.Log($"[SkillNodeUI] 按下 {nodeData.skill.skillName}，当前状态: {currentState}");
 
         if (currentState != SkillNodeState.Locked)
@@ -141,6 +145,8 @@ public class SkillNodeUI : MonoBehaviour,
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        // 同样实时查询，避免缓存过期
+        currentState = skillTreeManager.GetSkillState(nodeData);
         Debug.Log($"[SkillNodeUI] 开始拖拽 {nodeData.skill.skillName}，状态: {currentState}");
 
         // 仅已解锁技能可拖拽装备
