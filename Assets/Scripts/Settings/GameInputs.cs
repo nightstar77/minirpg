@@ -52,9 +52,10 @@ public static class GameInputs
     private const string SaveKey = "GameKeyBindings";
 
     /// <summary>
-    /// 绑定变更事件（改键后 UI 刷新用）
+    /// 绑定变更事件（改键后 UI 刷新用）。
+    /// 注意用 System.Action 全名，因为本类定义了 enum Action 会遮蔽 System.Action
     /// </summary>
-    public static event Action OnBindingsChanged;
+    public static event System.Action OnBindingsChanged;
 
     /// <summary>
     /// 是否正在等待玩家按键改键，此时所有游戏输入暂停

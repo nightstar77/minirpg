@@ -67,15 +67,6 @@ public class SkillSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         Refresh();
     }
 
-    private void OnDestroy()
-    {
-        if (skillController != null)
-        {
-            skillController.OnSkillChanged -= Refresh;
-        }
-        GameInputs.OnBindingsChanged -= RefreshKeyText;
-    }
-
     private void Update()
     {
         RefreshCooldown();
@@ -143,6 +134,7 @@ public class SkillSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             skillController.OnSkillChanged -= Refresh;
         }
+        GameInputs.OnBindingsChanged -= RefreshKeyText;
     }
 
     #region ===== 点击装备 =====
