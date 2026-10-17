@@ -5,12 +5,10 @@ using UnityEngine.EventSystems;
 
 /// <summary>
 /// 技能槽 UI：显示技能图标与快捷键，实时更新冷却遮罩。
-/// 支持拖拽交互：
-/// - 从技能树/技能槽拖入 → 装备或交换
-/// - 从本槽拖出 → 拖到另一个槽位进行交换
+/// 点击槽位 → 弹出技能选择面板，选择已解锁技能装备到本槽。
 /// 悬停时高亮显示。
 /// </summary>
-public class SkillSlotUI : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
+public class SkillSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("对应技能槽")]
     [SerializeField]
@@ -36,20 +34,9 @@ public class SkillSlotUI : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
 
     [SerializeField]
     private SkillController skillController;
-    // 本槽位的拖拽处理器（挂在 icon 子对象上，运行时自动添加）
-    private SkillDragHandler dragHandler;
 
     private void Awake()
     {
-        // 确保 icon 上有 SkillDragHandler 组件，没有则自动添加（支持从槽位拖出）
-        if (icon != null)
-        {
-            dragHandler = icon.GetComponent<SkillDragHandler>();
-            if (dragHandler == null)
-            {
-                dragHandler = icon.gameObject.AddComponent<SkillDragHandler>();
-            }
-        }
         // 记录原始图标颜色，用于悬停恢复
         if (icon != null)
         {
@@ -78,24 +65,12 @@ public class SkillSlotUI : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
             Debug.Log("UI读取不到技能:" + slotIndex);
             cooldownText.text = "";
             icon.enabled = false;
-            // 空槽位不可拖拽
-            if (dragHandler != null)
-            {
-                dragHandler.SetCanDrag(false);
-            }
             return;
         }
         Debug.Log("UI读取到技能:" + skill.SkillData.skillName);
         icon.enabled = true;
         icon.sprite = skill.SkillData.icon;
         keyText.text = skillController.GetSlotKey(slotIndex).ToString();
-
-        // 更新拖拽数据：技能类型 + 图标引用，并启用拖拽
-        if (dragHandler != null)
-        {
-            dragHandler.Init(skill.SkillType, icon);
-            dragHandler.SetCanDrag(true);
-        }
     }
 
     private void RefreshCooldown()
@@ -136,45 +111,14 @@ public class SkillSlotUI : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
         }
     }
 
-    #region ===== 拖拽接收（OnDrop）=====
+    #region ===== 点击装备 =====
 
     /// <summary>
-    /// 接收拖拽：通过 SkillDragPayload 获取技能数据，判断来源类型后执行装备或交换
+    /// 点击槽位 → 打开技能选择面板，从已解锁技能中选择一个装备到本槽
     /// </summary>
-    public void OnDrop(PointerEventData eventData)
+    public void OnPointerClick(PointerEventData eventData)
     {
-        // 通过接口读取拖拽数据，不关心拖拽源是技能树节点还是技能槽
-        ISkillDragSource source = eventData.pointerDrag.GetComponent<ISkillDragSource>();
-        if (source == null) { return; }
-
-        SkillDragPayload data = source.Payload;
-        if (data.skillType == SkillType.None)
-        {
-            Debug.LogWarning("拖拽数据无效");
-            return;
-        }
-
-        // 检查拖拽源是否来自另一个技能槽（向上找 SkillSlotUI 组件）
-        SkillSlotUI sourceSlot = eventData.pointerDrag.GetComponentInParent<SkillSlotUI>();
-
-        if (sourceSlot != null && sourceSlot != this)
-        {
-            // 来源是另一个技能槽 → 交换两个槽位的技能
-            Debug.Log($"从槽位 {sourceSlot.slotIndex} 拖拽到槽位 {slotIndex}，执行交换");
-            skillController.SwapSkills(sourceSlot.slotIndex, slotIndex);
-        }
-        else if (sourceSlot == null)
-        {
-            // 来源是技能树节点 → 直接装备技能到本槽位
-            SkillBase skill = skillController.GetSkill(data.skillType);
-            if (skill == null)
-            {
-                Debug.Log("没有找到技能:" + data.skillType);
-                return;
-            }
-            skillController.EquipSkill(slotIndex, skill);
-        }
-        // 如果 sourceSlot == this（拖到自己身上），什么都不做
+        SkillEquipPanelUI.Instance.Open(slotIndex, skillController);
     }
 
     #endregion
