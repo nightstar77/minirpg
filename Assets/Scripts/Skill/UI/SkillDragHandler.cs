@@ -10,7 +10,7 @@ using System.Collections;
 /// 带有弹性放大、回弹、透明度渐变等动画效果。
 /// canDrag 由外部控制（如技能树节点根据解锁状态、技能槽根据是否有技能）。
 /// </summary>
-public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class SkillDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, ISkillDragSource
 {
     [Header("拖拽设置")]
     [Tooltip("拖拽图标相对鼠标的偏移量（像素），避免遮挡光标")]

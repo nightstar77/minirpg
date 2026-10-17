@@ -114,6 +114,8 @@ public class SkillTreeUIManager : MonoBehaviour
         rect.rotation = Quaternion.Euler(0, 0, angle);
 
         Image image = line.GetComponent<Image>();
+        // 连线只用于显示，必须关闭射线接收，否则连线端点压在节点图标上会挡住节点的点击/悬停
+        image.raycastTarget = false;
 
         SkillLineData data = new SkillLineData();
         data.from = pre;

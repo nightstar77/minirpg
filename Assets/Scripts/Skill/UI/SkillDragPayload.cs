@@ -27,3 +27,13 @@ public struct SkillDragPayload
     /// <summary>原始颜色，用于恢复原图标颜色</summary>
     public Color originalColor;
 }
+
+/// <summary>
+/// 拖拽源接口：任何可以被拖拽到技能槽的对象都实现它（技能树节点、技能槽等）。
+/// 接收方（SkillSlotUI.OnDrop）通过它读取拖拽数据，不关心拖拽源的具体类型，
+/// 新增拖拽源时不用改接收方代码。
+/// </summary>
+public interface ISkillDragSource
+{
+    SkillDragPayload Payload { get; }
+}

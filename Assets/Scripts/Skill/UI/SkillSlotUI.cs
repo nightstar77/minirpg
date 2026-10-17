@@ -143,12 +143,11 @@ public class SkillSlotUI : MonoBehaviour, IDropHandler, IPointerEnterHandler, IP
     /// </summary>
     public void OnDrop(PointerEventData eventData)
     {
-        // 从拖拽源获取 SkillDragHandler
-        SkillDragHandler drag = eventData.pointerDrag.GetComponent<SkillDragHandler>();
-        if (drag == null) { return; }
+        // 通过接口读取拖拽数据，不关心拖拽源是技能树节点还是技能槽
+        ISkillDragSource source = eventData.pointerDrag.GetComponent<ISkillDragSource>();
+        if (source == null) { return; }
 
-        // 从 Payload 读取技能数据，而不是直接访问私有字段
-        SkillDragPayload data = drag.Payload;
+        SkillDragPayload data = source.Payload;
         if (data.skillType == SkillType.None)
         {
             Debug.LogWarning("拖拽数据无效");
