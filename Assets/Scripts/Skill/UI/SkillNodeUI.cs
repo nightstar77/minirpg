@@ -76,6 +76,7 @@ public class SkillNodeUI : MonoBehaviour,
         };
 
         Refresh();
+        Debug.Log($"[SkillNodeUI] 初始化节点 {data.skill.skillName}，初始状态: {currentState}");
     }
 
     /// <summary>
@@ -86,6 +87,7 @@ public class SkillNodeUI : MonoBehaviour,
         currentState = skillTreeManager.GetSkillState(nodeData);
         icon.sprite = nodeData.skill.icon;
         icon.color = currentState == SkillNodeState.Unlocked ? Color.white : Color.gray;
+        Debug.Log($"[SkillNodeUI] 刷新 {nodeData.skill.skillName} → 状态: {currentState}");
     }
 
     #region ===== 按下解锁 =====
@@ -96,9 +98,18 @@ public class SkillNodeUI : MonoBehaviour,
     /// </summary>
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (currentState != SkillNodeState.Locked) { return; }
+        Debug.Log($"[SkillNodeUI] 按下 {nodeData.skill.skillName}，当前状态: {currentState}");
 
-        if (skillTreeManager.UnlockSkill(nodeData))
+        if (currentState != SkillNodeState.Locked)
+        {
+            Debug.Log($"[SkillNodeUI] {nodeData.skill.skillName} 状态是 {currentState}（不是 Locked 可学习状态），跳过解锁");
+            return;
+        }
+
+        bool result = skillTreeManager.UnlockSkill(nodeData);
+        Debug.Log($"[SkillNodeUI] 解锁{(result ? "成功" : "失败")}: {nodeData.skill.skillName}");
+
+        if (result)
         {
             Refresh();
         }
@@ -110,6 +121,7 @@ public class SkillNodeUI : MonoBehaviour,
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        Debug.Log($"[SkillNodeUI] 悬停进入 {nodeData.skill.skillName}");
         if (tooltip == null) { return; }
 
         tooltip.Show(nodeData, skillTreeManager.GetSkillState(nodeData));
@@ -129,6 +141,8 @@ public class SkillNodeUI : MonoBehaviour,
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        Debug.Log($"[SkillNodeUI] 开始拖拽 {nodeData.skill.skillName}，状态: {currentState}");
+
         // 仅已解锁技能可拖拽装备
         if (currentState != SkillNodeState.Unlocked) { return; }
 
@@ -156,16 +170,20 @@ public class SkillNodeUI : MonoBehaviour,
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        Debug.Log($"[SkillNodeUI] 结束拖拽 {nodeData.skill.skillName}，dragIcon 是否存在: {dragIcon != null}");
+
+        // 关键：只有拖拽真正开始过（dragIcon 已创建）才恢复颜色和销毁。
+        // 否则 OnBeginDrag 提前返回后 Unity 仍会触发本方法，
+        // 会错误地把图标恢复成 Init 时的白色，导致未解锁技能"变亮"
+        if (dragIcon == null) { return; }
+
         // 恢复原图标颜色
         icon.color = payload.originalColor;
 
         // 销毁拖拽图标（落在技能槽上时，装备逻辑由技能槽的 OnDrop 处理）
-        if (dragIcon != null)
-        {
-            Destroy(dragIcon);
-            dragIcon = null;
-            dragIconRect = null;
-        }
+        Destroy(dragIcon);
+        dragIcon = null;
+        dragIconRect = null;
     }
 
     /// <summary>
