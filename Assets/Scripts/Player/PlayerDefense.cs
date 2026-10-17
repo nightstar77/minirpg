@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 玩家防御控制器：与 PlayerAttack 同模式的常驻基础能力，
 /// 不走技能树/技能槽/冷却系统。
-/// 按住 L 键进入防御状态（免疫伤害），松开解除。
+/// 按住防御键（默认 K，可在设置面板改键）进入防御状态（免疫伤害），松开解除。
 /// 防御期间不能移动、不能攻击。
 /// </summary>
 public class PlayerDefense : MonoBehaviour
@@ -33,11 +33,17 @@ public class PlayerDefense : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.L))
+        // 改键捕获期间暂停游戏输入
+        if (GameInputs.IsCapturing)
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(GameInputs.GetKey(GameInputs.Action.Defend)))
         {
             StartDefend();
         }
-        if (Input.GetKeyUp(KeyCode.L))
+        if (Input.GetKeyUp(GameInputs.GetKey(GameInputs.Action.Defend)))
         {
             StopDefend();
         }

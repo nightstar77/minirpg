@@ -2,7 +2,8 @@
 
 /// <summary>
 /// 玩家攻击控制器：管理连击输入队列、HitBox 开关时机与动画协调。
-/// J键攻击，K键取消攻击。连击段数循环（超过 maxCombo 回到第1段）。
+/// 按键从 GameInputs 读取（默认 J 攻击、K 取消），可在设置面板改键。
+/// 连击段数循环（超过 maxCombo 回到第1段）。
 /// </summary>
 public class PlayerAttack : MonoBehaviour
 {
@@ -82,11 +83,17 @@ public class PlayerAttack : MonoBehaviour
 
     private void ReadAttackInput()
     {
-        if (Input.GetKeyDown(KeyCode.J))
+        // 改键捕获期间暂停游戏输入
+        if (GameInputs.IsCapturing)
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(GameInputs.GetKey(GameInputs.Action.Attack)))
         {
             HandleAttackInput();
         }
-        if (Input.GetKeyDown(KeyCode.K))
+        if (Input.GetKeyDown(GameInputs.GetKey(GameInputs.Action.CancelAttack)))
         {
             CancelAttack();
         }

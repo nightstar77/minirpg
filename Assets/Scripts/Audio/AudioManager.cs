@@ -36,6 +36,19 @@ public class AudioManager : MonoBehaviour
     private AudioSource bgmSource;
     private AudioSource sfxSource;
 
+    private const string BgmVolumeKey = "BGMVolume";
+    private const string SfxVolumeKey = "SFXVolume";
+
+    /// <summary>
+    /// 当前 BGM 音量（0~1）
+    /// </summary>
+    public float BgmVolume => bgmVolume;
+
+    /// <summary>
+    /// 当前音效音量（0~1）
+    /// </summary>
+    public float SfxVolume => sfxVolume;
+
     private void Awake()
     {
         // 单例：场景切换时保留
@@ -46,6 +59,16 @@ public class AudioManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        // 读取持久化的音量设置
+        if (PlayerPrefs.HasKey(BgmVolumeKey))
+        {
+            bgmVolume = Mathf.Clamp01(PlayerPrefs.GetFloat(BgmVolumeKey));
+        }
+        if (PlayerPrefs.HasKey(SfxVolumeKey))
+        {
+            sfxVolume = Mathf.Clamp01(PlayerPrefs.GetFloat(SfxVolumeKey));
+        }
 
         // 创建两个 AudioSource：一个放 BGM，一个放音效
         bgmSource = gameObject.AddComponent<AudioSource>();
@@ -110,12 +133,44 @@ public class AudioManager : MonoBehaviour
 
     #endregion
 
+    #region ===== 音量调节（设置面板用） =====
+
     /// <summary>
-    /// 播放一次性音效
+    /// 设置 BGM 音量（0~1），实时生效并持久化
+    /// </summary>
+    public void SetBgmVolume(float value)
+    {
+        bgmVolume = Mathf.Clamp01(value);
+        if (bgmSource != null)
+        {
+            bgmSource.volume = bgmVolume;
+        }
+        PlayerPrefs.SetFloat(BgmVolumeKey, bgmVolume);
+        PlayerPrefs.Save();
+    }
+
+    /// <summary>
+    /// 设置音效音量（0~1），实时生效并持久化
+    /// </summary>
+    public void SetSfxVolume(float value)
+    {
+        sfxVolume = Mathf.Clamp01(value);
+        if (sfxSource != null)
+        {
+            sfxSource.volume = sfxVolume;
+        }
+        PlayerPrefs.SetFloat(SfxVolumeKey, sfxVolume);
+        PlayerPrefs.Save();
+    }
+
+    #endregion
+
+    /// <summary>
+    /// 播放一次性音效（音量由 sfxSource.volume 统一控制）
     /// </summary>
     private void PlaySfx(AudioClip clip)
     {
         if (clip == null || sfxSource == null) return;
-        sfxSource.PlayOneShot(clip, sfxVolume);
+        sfxSource.PlayOneShot(clip);
     }
 }

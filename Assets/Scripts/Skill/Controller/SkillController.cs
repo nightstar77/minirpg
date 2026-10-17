@@ -189,7 +189,8 @@ public class SkillController : MonoBehaviour
             Debug.LogWarning("技能槽索引错误");
             return KeyCode.None;
         }
-        return skillSlots[index].Key;
+        // 按键以 GameInputs 为准（设置面板改键后实时生效）
+        return GameInputs.GetSkillKey(index);
     }
 
 }

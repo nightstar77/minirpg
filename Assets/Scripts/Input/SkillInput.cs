@@ -1,15 +1,13 @@
 using UnityEngine;
 
 /// <summary>
-/// 技能输入处理：监听 Q/E/R/F 键，将按键映射到对应技能槽并触发技能
+/// 技能输入处理：监听技能槽按键（默认 Q/E/R/F，可在设置面板改键），
+/// 将按键映射到对应技能槽并触发技能
 /// </summary>
 public class SkillInput : MonoBehaviour
 {
     [SerializeField]
     private SkillController skillController;
-
-    // 默认技能快捷键，顺序对应技能槽 0~3
-    private KeyCode[] skillKeys = { KeyCode.Q, KeyCode.E, KeyCode.R, KeyCode.F };
 
     private void Awake()
     {
@@ -19,21 +17,25 @@ public class SkillInput : MonoBehaviour
 
     private void Update()
     {
-        foreach (KeyCode key in skillKeys)
+        // 改键捕获期间暂停游戏输入
+        if (GameInputs.IsCapturing)
         {
-            if (Input.GetKeyDown(key))
-            { UseSkillKey(key); }
+            return;
+        }
+
+        // 按槽位顺序读取各自绑定的按键
+        for (int i = 0; i < GameInputs.SkillActions.Length; i++)
+        {
+            if (Input.GetKeyDown(GameInputs.GetSkillKey(i)))
+            {
+                UseSkillSlot(i);
+            }
         }
     }
 
-    private void UseSkillKey(KeyCode key)
+    private void UseSkillSlot(int index)
     {
-        int index = skillController.GetSlotIndexByKey(key);
-        if (index == -1)
-        {
-            Debug.Log("没有绑定技能槽:" + key);
-            return;
-        }
+        // 槽位索引与 GameInputs.SkillActions 一一对应，直接使用
         skillController.UseSkill(index);
     }
 

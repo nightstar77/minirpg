@@ -62,7 +62,18 @@ public class SkillSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     private void Start()
     {
         skillController.OnSkillChanged += Refresh;
+        // 设置面板改键后刷新快捷键显示
+        GameInputs.OnBindingsChanged += RefreshKeyText;
         Refresh();
+    }
+
+    private void OnDestroy()
+    {
+        if (skillController != null)
+        {
+            skillController.OnSkillChanged -= Refresh;
+        }
+        GameInputs.OnBindingsChanged -= RefreshKeyText;
     }
 
     private void Update()
@@ -85,7 +96,19 @@ public class SkillSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         Debug.Log("UI读取到技能:" + skill.SkillData.skillName);
         icon.enabled = true;
         icon.sprite = skill.SkillData.icon;
-        keyText.text = skillController.GetSlotKey(slotIndex).ToString();
+        keyText.text = GameInputs.GetKeyName(GameInputs.SkillActions[slotIndex]);
+    }
+
+    /// <summary>
+    /// 改键后只刷新快捷键文本（不重复刷新图标）
+    /// </summary>
+    private void RefreshKeyText()
+    {
+        SkillBase skill = skillController.GetSlotSkill(slotIndex);
+        if (skill != null)
+        {
+            keyText.text = GameInputs.GetKeyName(GameInputs.SkillActions[slotIndex]);
+        }
     }
 
     private void RefreshCooldown()
