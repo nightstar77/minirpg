@@ -21,6 +21,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private float invincibleTimer;              // 无敌时间计时器
     public float invincibleDuration = 0.8f;     // 无敌持续时间
     public event Action OnPlayerDead;           // 玩家死亡事件，UI 等系统订阅
+    /// <summary>血量变化事件（参数：当前血量、最大血量），HUD 订阅后刷新血条</summary>
+    public event Action<float, float> OnHPChanged;
     private bool isDefending;                   // 防御中，免疫伤害
 
     #endregion
@@ -44,7 +46,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private void Start()
     {
+        // 初始化血量并通知 HUD 首次显示
         currentHP = maxHP;
+        OnHPChanged?.Invoke(currentHP, maxHP);
     }
 
     void Update()
@@ -80,6 +84,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             return;
         }
         currentHP -= damage;
+
+        OnHPChanged?.Invoke(currentHP, maxHP);
 
         StartInvincible();
         // 受伤时强制取消当前攻击
@@ -177,6 +183,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (amount <= 0) return;
         maxHP += amount;
         currentHP += amount;
+        OnHPChanged?.Invoke(currentHP, maxHP);
         Debug.Log("最大生命值提升 +" + amount + " 当前上限:" + maxHP);
     }
 }

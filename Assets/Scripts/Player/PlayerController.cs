@@ -1,9 +1,8 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 /// <summary>
 /// 玩家控制器：处理移动输入与冲刺逻辑。
-/// 使用 InputSystem 的 OnMove 回调读取方向，FixedUpdate 中施加速度。
+/// 统一使用旧 Input Manager（与 GameInputs 改键系统一致），在 Update 中读取方向，FixedUpdate 中施加速度。
 /// 攻击/受伤/死亡状态下禁止移动。
 /// </summary>
 public class PlayerController : MonoBehaviour
@@ -46,6 +45,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        ReadMoveInput();
         UpdateDash();
     }
 
@@ -58,11 +58,20 @@ public class PlayerController : MonoBehaviour
 
     #region ===== Input =====
     /// <summary>
-    /// InputSystem 回调：读取 Vector2 移动输入并缓存
+    /// 读取 WASD/方向键移动输入并缓存（旧 Input Manager，与 GameInputs 改键系统统一）。
     /// </summary>
-    public void OnMove(InputAction.CallbackContext context)
+    private void ReadMoveInput()
     {
-        moveInput = context.ReadValue<Vector2>();
+        // 改键捕获期间暂停游戏输入
+        if (GameInputs.IsCapturing)
+        {
+            moveInput = Vector2.zero;
+            return;
+        }
+
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
+        moveInput = new Vector2(h, v);
 
         // 斜向输入归一化，避免对角线速度更快
         if (moveInput.sqrMagnitude > 1f)
@@ -75,7 +84,6 @@ public class PlayerController : MonoBehaviour
         {
             lastMoveDirection = moveInput;
         }
-
     }
 
     #endregion

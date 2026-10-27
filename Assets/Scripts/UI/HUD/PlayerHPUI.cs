@@ -16,11 +16,18 @@ public class PlayerHPUI : MonoBehaviour
 
     private void Start()
     {
-        playerHealth.OnPlayerDead += Hide;
+        if (playerHealth != null)
+        {
+            playerHealth.OnPlayerDead += Hide;
+            playerHealth.OnHPChanged += OnHPChanged;
+        }
         Refresh();
     }
 
-    private void Update()
+    /// <summary>
+    /// 血量变化回调：刷新血条显示
+    /// </summary>
+    private void OnHPChanged(float current, float max)
     {
         Refresh();
     }
@@ -44,6 +51,7 @@ public class PlayerHPUI : MonoBehaviour
         if (playerHealth != null)
         {
             playerHealth.OnPlayerDead -= Hide;
+            playerHealth.OnHPChanged -= OnHPChanged;
         }
     }
 
