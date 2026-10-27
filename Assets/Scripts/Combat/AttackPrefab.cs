@@ -4,7 +4,7 @@ using UnityEngine;
 /// 攻击预制体：玩家与敌人共用的攻击碰撞体。
 /// isPlayerAttack 决定命中 Player 还是 Enemy 标签。
 /// </summary>
-public class AttackPrefeb : MonoBehaviour
+public class AttackPrefab : MonoBehaviour
 {
     public float DestroyTime = 0.3f;
     public bool isPlayerAttack = true;

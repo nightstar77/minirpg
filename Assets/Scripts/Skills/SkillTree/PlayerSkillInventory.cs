@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
+using MiniRPG.Core;
 
 /// <summary>
-/// 玩家技能背包：管理已解锁技能列表，使用 PlayerPrefs 持久化
+/// 玩家技能背包：管理已解锁技能列表，通过 GameManager.SaveData 持久化。
 /// </summary>
 public class PlayerSkillInventory : MonoBehaviour
 {
@@ -34,69 +35,53 @@ public class PlayerSkillInventory : MonoBehaviour
     }
 
     /// <summary>
-    /// 序列化为 JSON 存入 PlayerPrefs
-    /// </summary>
-    public void Save()
-    {
-        string json = JsonUtility.ToJson(new SkillSaveWrapper(unlockedSkills));
-
-        PlayerPrefs.SetString("PlayerSkills", json);
-
-        PlayerPrefs.Save();
-    }
-
-    /// <summary>
-    /// 从 PlayerPrefs 读取已解锁技能
+    /// 从 GameManager.SaveData 读取已解锁技能
     /// </summary>
     public void Load()
     {
-        if (!PlayerPrefs.HasKey("PlayerSkills"))
-        {
-            return;
-        }
-
-        string json = PlayerPrefs.GetString("PlayerSkills");
-
-        SkillSaveWrapper data = JsonUtility.FromJson<SkillSaveWrapper>(json);
-
         unlockedSkills = new List<SkillType>();
-        if (data?.skills != null)
+        if (GameManager.Instance?.SaveData?.unlockedSkills == null) return;
+
+        foreach (int raw in GameManager.Instance.SaveData.unlockedSkills)
         {
-            foreach (SkillType type in data.skills)
+            SkillType type = (SkillType)raw;
+            // 过滤掉已删除/无效的技能类型（如旧存档残留的 Defense）
+            if (!System.Enum.IsDefined(typeof(SkillType), type))
             {
-                // 过滤掉已删除/无效的技能类型（如旧存档残留的 Defense），
-                // 避免 GetSkill 报"没有找到技能"
-                if (!System.Enum.IsDefined(typeof(SkillType), type))
-                {
-                    Debug.Log($"[PlayerSkillInventory] 忽略无效技能存档: {(int)type}");
-                    continue;
-                }
-                if (!unlockedSkills.Contains(type))
-                {
-                    unlockedSkills.Add(type);
-                }
+                Debug.Log($"[PlayerSkillInventory] 忽略无效技能存档: {raw}");
+                continue;
             }
-            // 清理后的结果写回，旧数据只处理一次
-            Save();
+            if (!unlockedSkills.Contains(type))
+            {
+                unlockedSkills.Add(type);
+            }
         }
     }
 
-    // JSON 序列化包装类
-    [System.Serializable]
-    private class SkillSaveWrapper
+    /// <summary>
+    /// 序列化到 GameManager.SaveData 并写盘
+    /// </summary>
+    public void Save()
     {
-        public List<SkillType> skills;
-        public SkillSaveWrapper(List<SkillType> skills)
+        var data = GameManager.Instance?.SaveData;
+        if (data == null) return;
+
+        data.unlockedSkills = new List<int>();
+        foreach (SkillType type in unlockedSkills)
         {
-            this.skills = skills;
+            data.unlockedSkills.Add((int)type);
         }
+        GameManager.Instance.Save();
     }
 
     public void ClearSave()
     {
-        PlayerPrefs.DeleteKey("PlayerSkills");
-        PlayerPrefs.Save();
+        unlockedSkills.Clear();
+        if (GameManager.Instance?.SaveData != null)
+        {
+            GameManager.Instance.SaveData.unlockedSkills.Clear();
+            GameManager.Instance.Save();
+        }
         Debug.Log("技能存档已清除");
     }
-
 }

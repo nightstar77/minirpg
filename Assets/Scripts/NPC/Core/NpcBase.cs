@@ -27,7 +27,7 @@ namespace NPC
     /// 
     /// 参考项目现有模式：
     /// - FSM 结构 → EnemyBase（Enter/Update/Exit 三段式）
-    /// - 触发器检测 → EnemypursuitCollider（子物体触发器 + 宿主回调）
+    /// - 触发器检测 → EnemyPursuitCollider（子物体触发器 + 宿主回调）
     /// - 数据驱动 → SkillData（ScriptableObject）
     /// 
     /// 使用方式：

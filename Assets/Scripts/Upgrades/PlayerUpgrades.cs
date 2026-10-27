@@ -1,17 +1,12 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using MiniRPG.Core;
 
 /// <summary>
 /// 玩家强化管理器：记录所有强化项的等级，购买时扣除金币并把效果应用到玩家属性。
 /// 挂在 Player 物体上。
-///
-/// 强化效果应用目标：
-/// - MaxHealth   → PlayerHealth.IncreaseMaxHP
-/// - AttackDamage → WeaponHitBox.damage
-/// - AttackSpeed  → PlayerAnimation.SetAnimationSpeed
-///
-/// 设计模式参考 PlayerSkillPoint（事件通知 UI 刷新）。
+/// 强化等级持久化到 GameManager.SaveData（按 UpgradeType 索引）。
 /// </summary>
 public class PlayerUpgrades : MonoBehaviour
 {
@@ -53,6 +48,40 @@ public class PlayerUpgrades : MonoBehaviour
                 if (data != null && !upgradeLevels.ContainsKey(data))
                 {
                     upgradeLevels.Add(data, 0);
+                }
+            }
+        }
+
+        // 从存档读取已购买的强化等级并重新应用效果
+        LoadFromSave();
+    }
+
+    /// <summary>
+    /// 从 GameManager.SaveData 读取各强化项等级并应用效果。
+    /// 存档用 UpgradeType 作 key（ScriptableObject 无法序列化）。
+    /// </summary>
+    private void LoadFromSave()
+    {
+        var save = GameManager.Instance?.SaveData;
+        if (save == null || save.upgradeTypes == null) return;
+
+        for (int i = 0; i < save.upgradeTypes.Count && i < save.upgradeLevels.Count; i++)
+        {
+            UpgradeType type = (UpgradeType)save.upgradeTypes[i];
+            int level = save.upgradeLevels[i];
+            if (level <= 0) continue;
+
+            // 找到对应 UpgradeData 并恢复等级 + 应用效果
+            foreach (UpgradeData data in upgrades)
+            {
+                if (data != null && data.type == type)
+                {
+                    upgradeLevels[data] = level;
+                    for (int l = 0; l < level; l++)
+                    {
+                        ApplyUpgrade(data);
+                    }
+                    break;
                 }
             }
         }
@@ -119,10 +148,30 @@ public class PlayerUpgrades : MonoBehaviour
 
         upgradeLevels[data]++;
         ApplyUpgrade(data);
+        Persist();
 
         Debug.Log($"购买强化 {data.upgradeName} 等级 {upgradeLevels[data]}/{data.maxLevel}，花费 {cost}");
         OnUpgradeChanged?.Invoke();
         return true;
+    }
+
+    /// <summary>把所有强化等级写入存档（按 UpgradeType 索引）</summary>
+    private void Persist()
+    {
+        var save = GameManager.Instance?.SaveData;
+        if (save == null) return;
+
+        save.upgradeTypes = new List<int>();
+        save.upgradeLevels = new List<int>();
+        foreach (KeyValuePair<UpgradeData, int> kv in upgradeLevels)
+        {
+            if (kv.Key != null && kv.Value > 0)
+            {
+                save.upgradeTypes.Add((int)kv.Key.type);
+                save.upgradeLevels.Add(kv.Value);
+            }
+        }
+        GameManager.Instance.Save();
     }
 
     #endregion

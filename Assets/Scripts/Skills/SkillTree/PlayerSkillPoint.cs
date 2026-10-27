@@ -1,9 +1,11 @@
 using UnityEngine;
 using System;
+using MiniRPG.Core;
 
 /// <summary>
-/// 玩家技能点管理：消耗与获取技能点，变更时触发事件通知 UI 刷新
-/// 技能点获取方式：玩家每升 1 级由 PlayerExperience 自动发放 1 点
+/// 玩家技能点管理：消耗与获取技能点，变更时触发事件通知 UI 刷新。
+/// 技能点获取方式：玩家每升 1 级由 PlayerExperience 自动发放 1 点。
+/// 持久化到 GameManager.SaveData.skillPoints。
 /// </summary>
 public class PlayerSkillPoint : MonoBehaviour
 {
@@ -18,7 +20,10 @@ public class PlayerSkillPoint : MonoBehaviour
 
     private void Awake()
     {
-        currentPoint = skillPoints;
+        // 从存档读取，无存档则用 Inspector 初始值
+        currentPoint = GameManager.Instance?.SaveData != null
+            ? GameManager.Instance.SaveData.skillPoints
+            : skillPoints;
     }
 
     public int CurrentPoint
@@ -39,6 +44,7 @@ public class PlayerSkillPoint : MonoBehaviour
             return false;
         }
         currentPoint -= amount;
+        Persist();
         OnSkillPointChanged?.Invoke();
 
         Debug.Log("消耗技能点:" + amount + " 剩余:" + currentPoint);
@@ -48,8 +54,19 @@ public class PlayerSkillPoint : MonoBehaviour
     public void AddPoint(int amount)
     {
         currentPoint += amount;
+        Persist();
         OnSkillPointChanged?.Invoke();
 
         Debug.Log("获得技能点:" + amount);
+    }
+
+    /// <summary>把当前技能点写入存档</summary>
+    private void Persist()
+    {
+        if (GameManager.Instance?.SaveData != null)
+        {
+            GameManager.Instance.SaveData.skillPoints = currentPoint;
+            GameManager.Instance.Save();
+        }
     }
 }

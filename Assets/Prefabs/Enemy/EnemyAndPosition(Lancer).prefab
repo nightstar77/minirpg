@@ -427,7 +427,7 @@ GameObject:
   - component: {fileID: 3416467098183720348}
   - component: {fileID: 6580170082264603226}
   m_Layer: 0
-  m_Name: EnemypursuitCollider
+  m_Name: EnemyPursuitCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -505,7 +505,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 390448919984ca54e81e1bb027269147, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemypursuitCollider
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyPursuitCollider
   enemyScript: {fileID: 5982605261677692173}
 --- !u!1 &5831362542294537291
 GameObject:

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7647893358737657101}
   - component: {fileID: -5224869755220071555}
   m_Layer: 0
-  m_Name: AttackPrefeb
+  m_Name: AttackPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -140,7 +140,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff8ebd3ab2106fc44a75f53a77e2b947, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AttackPrefeb
+  m_EditorClassIdentifier: Assembly-CSharp::AttackPrefab
   DestroyTime: 0.3
   isPlayerAttack: 1
   attackDamage: 10

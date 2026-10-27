@@ -4,7 +4,7 @@ namespace NPC
 {
     /// <summary>
     /// NPC 交互范围触发器
-    /// 设计思路完全参考 EnemypursuitCollider：
+    /// 设计思路完全参考 EnemyPursuitCollider：
     /// - 挂在 NPC 的子物体上（带 CircleCollider2D 或 BoxCollider2D，勾选 Is Trigger）
     /// - 只负责检测玩家进入/离开，逻辑全部回调给 NpcBase
     /// - 触发器与业务逻辑分离，职责单一

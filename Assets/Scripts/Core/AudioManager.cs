@@ -1,13 +1,10 @@
 using UnityEngine;
+using MiniRPG.Core;
 
 /// <summary>
 /// 全局音频管理器（单例）
 /// 统一管理 BGM 和音效，避免每个脚本各自创建 AudioSource。
-///
-/// 使用方式：
-/// 1. 在场景里建一个空物体 "AudioManager"，挂上此脚本
-/// 2. Inspector 里拖入各个 AudioClip（BGM、攻击、升级、格挡）
-/// 3. 其他脚本通过 AudioManager.Instance.PlayXXX() 播放
+/// 音量设置持久化到 GameManager.SaveData。
 /// </summary>
 public class AudioManager : MonoBehaviour
 {
@@ -60,16 +57,6 @@ public class AudioManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // 读取持久化的音量设置
-        if (PlayerPrefs.HasKey(BgmVolumeKey))
-        {
-            bgmVolume = Mathf.Clamp01(PlayerPrefs.GetFloat(BgmVolumeKey));
-        }
-        if (PlayerPrefs.HasKey(SfxVolumeKey))
-        {
-            sfxVolume = Mathf.Clamp01(PlayerPrefs.GetFloat(SfxVolumeKey));
-        }
-
         // 创建两个 AudioSource：一个放 BGM，一个放音效
         bgmSource = gameObject.AddComponent<AudioSource>();
         bgmSource.loop = true;
@@ -84,6 +71,16 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
+        // 在 Start 中读取存档音量（确保 GameManager.Awake 已先执行完毕）
+        var save = GameManager.Instance?.SaveData;
+        if (save != null)
+        {
+            bgmVolume = Mathf.Clamp01(save.bgmVolume);
+            sfxVolume = Mathf.Clamp01(save.sfxVolume);
+            if (bgmSource != null) bgmSource.volume = bgmVolume;
+            if (sfxSource != null) sfxSource.volume = sfxVolume;
+        }
+
         PlayBGM();
     }
 
@@ -145,8 +142,12 @@ public class AudioManager : MonoBehaviour
         {
             bgmSource.volume = bgmVolume;
         }
-        PlayerPrefs.SetFloat(BgmVolumeKey, bgmVolume);
-        PlayerPrefs.Save();
+        var save = GameManager.Instance?.SaveData;
+        if (save != null)
+        {
+            save.bgmVolume = bgmVolume;
+            GameManager.Instance.Save();
+        }
     }
 
     /// <summary>
@@ -159,8 +160,12 @@ public class AudioManager : MonoBehaviour
         {
             sfxSource.volume = sfxVolume;
         }
-        PlayerPrefs.SetFloat(SfxVolumeKey, sfxVolume);
-        PlayerPrefs.Save();
+        var save = GameManager.Instance?.SaveData;
+        if (save != null)
+        {
+            save.sfxVolume = sfxVolume;
+            GameManager.Instance.Save();
+        }
     }
 
     #endregion

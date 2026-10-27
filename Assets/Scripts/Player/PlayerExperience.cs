@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using MiniRPG.Core;
 
 /// <summary>
 /// 玩家经验与等级系统
@@ -9,24 +10,19 @@ using UnityEngine;
 /// - 击杀怪物后调用 GainExp() 获取经验
 /// - 经验满后自动升级（支持一次经验连升多级）
 /// - 每升 1 级自动获得 1 个技能点（调用 PlayerSkillPoint.AddPoint）
+/// - 等级/经验持久化到 GameManager.SaveData
 ///
 /// 升级经验公式（支持无限等级，不写死数组）：
 ///     升到 (当前等级+1) 所需经验 = baseExpToNext * 当前等级
-/// 例如 baseExpToNext = 100：
-///     Lv1→Lv2 需 100，Lv2→Lv3 需 200，Lv3→Lv4 需 300 ...
-/// 曲线越往后越慢，符合 RPG 常规手感，后期可在 Inspector 调参。
-///
-/// 事件模式参考 PlayerHealth（OnPlayerDead）：
-/// UI 订阅 OnExpChanged / OnLevelChanged 事件刷新显示。
 /// </summary>
 public class PlayerExperience : MonoBehaviour
 {
     [Header("等级设置")]
-    [Tooltip("初始等级（一般为 1）")]
+    [Tooltip("初始等级（一般为 1），无存档时使用")]
     public int startLevel = 1;
 
     [Header("经验曲线设置")]
-    [Tooltip("升级所需经验的基础值：下级所需经验 = 此值 × 当前等级")]
+    [Tooltip("升级所需经验的基础值：下级所需经验 = 此值 * 当前等级")]
     public int baseExpToNext = 100;
 
     [Header("组件引用（拖拽赋值）")]
@@ -57,9 +53,10 @@ public class PlayerExperience : MonoBehaviour
 
     private void Awake()
     {
-        // 初始化等级
-        currentLevel = startLevel;
-        currentExp = 0;
+        // 从存档读取等级/经验，无存档则用初始值
+        var save = GameManager.Instance?.SaveData;
+        currentLevel = save != null ? save.level : startLevel;
+        currentExp = save != null ? save.exp : 0;
         RecalculateExpToNext();
     }
 
@@ -74,7 +71,6 @@ public class PlayerExperience : MonoBehaviour
     /// 获取经验（由怪物死亡时调用）
     /// 支持一次经验连升多级（比如打大怪直接升两级）
     /// </summary>
-    /// <param name="amount">获得的经验数量</param>
     public void GainExp(int amount)
     {
         if (amount <= 0) return;
@@ -88,6 +84,7 @@ public class PlayerExperience : MonoBehaviour
             LevelUp();
         }
 
+        Persist();
         // 通知 UI 刷新经验条
         OnExpChanged?.Invoke(currentExp, expToNextLevel);
     }
@@ -124,10 +121,21 @@ public class PlayerExperience : MonoBehaviour
 
     /// <summary>
     /// 按公式重算升级所需经验
-    /// 公式：baseExpToNext × 当前等级
+    /// 公式：baseExpToNext * 当前等级
     /// </summary>
     private void RecalculateExpToNext()
     {
         expToNextLevel = baseExpToNext * currentLevel;
+    }
+
+    /// <summary>把当前等级/经验写入存档</summary>
+    private void Persist()
+    {
+        if (GameManager.Instance?.SaveData != null)
+        {
+            GameManager.Instance.SaveData.level = currentLevel;
+            GameManager.Instance.SaveData.exp = currentExp;
+            GameManager.Instance.Save();
+        }
     }
 }

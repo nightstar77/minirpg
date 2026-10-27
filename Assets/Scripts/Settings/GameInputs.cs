@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using MiniRPG.Core;
 
 /// <summary>
 /// 全局按键绑定管理器（静态类）：
 /// 所有输入脚本（PlayerAttack/PlayerDefense/SkillInput）统一从这里读键，
-/// 支持运行时改键并持久化到 PlayerPrefs。
+/// 支持运行时改键并持久化到 GameManager.SaveData。
 ///
 /// 改键期间（IsCapturing=true）各输入脚本暂停读键，避免改键时误触发技能。
 /// </summary>
@@ -47,8 +48,6 @@ public static class GameInputs
     };
 
     private static Dictionary<Action, KeyCode> bindings;
-    // v2：移除 CancelAttack 后枚举值整体前移，旧存档的动作索引会错位，换 key 废弃旧数据
-    private const string SaveKey = "GameKeyBindings_v2";
 
     /// <summary>
     /// 绑定变更事件（改键后 UI 刷新用）。
@@ -150,19 +149,15 @@ public static class GameInputs
 
         bindings = new Dictionary<Action, KeyCode>(defaults);
 
-        if (PlayerPrefs.HasKey(SaveKey))
+        var save = GameManager.Instance?.SaveData;
+        if (save?.keyActions != null && save.keyCodes != null)
         {
-            string json = PlayerPrefs.GetString(SaveKey);
-            BindingSave data = JsonUtility.FromJson<BindingSave>(json);
-            if (data?.actions != null && data.keys != null)
+            for (int i = 0; i < save.keyActions.Count && i < save.keyCodes.Count; i++)
             {
-                for (int i = 0; i < data.actions.Length && i < data.keys.Length; i++)
+                Action action = (Action)save.keyActions[i];
+                if (Enum.IsDefined(typeof(Action), action) && bindings.ContainsKey(action))
                 {
-                    Action action = (Action)data.actions[i];
-                    if (Enum.IsDefined(typeof(Action), action) && bindings.ContainsKey(action))
-                    {
-                        bindings[action] = (KeyCode)data.keys[i];
-                    }
+                    bindings[action] = (KeyCode)save.keyCodes[i];
                 }
             }
         }
@@ -172,28 +167,17 @@ public static class GameInputs
     {
         EnsureLoaded();
 
-        List<int> actions = new List<int>();
-        List<int> keys = new List<int>();
+        var save = GameManager.Instance?.SaveData;
+        if (save == null) return;
+
+        save.keyActions = new List<int>();
+        save.keyCodes = new List<int>();
         foreach (KeyValuePair<Action, KeyCode> kv in bindings)
         {
-            actions.Add((int)kv.Key);
-            keys.Add((int)kv.Value);
+            save.keyActions.Add((int)kv.Key);
+            save.keyCodes.Add((int)kv.Value);
         }
-
-        BindingSave data = new BindingSave
-        {
-            actions = actions.ToArray(),
-            keys = keys.ToArray(),
-        };
-        PlayerPrefs.SetString(SaveKey, JsonUtility.ToJson(data));
-        PlayerPrefs.Save();
-    }
-
-    [Serializable]
-    private class BindingSave
-    {
-        public int[] actions;
-        public int[] keys;
+        GameManager.Instance.Save();
     }
 
     #endregion

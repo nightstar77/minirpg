@@ -38,7 +38,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
     private Vector2 attackerDirection;
     // 敌人及其子对象的父级，死亡后整体销毁
     public GameObject enemyAndPos;
-    // 玩家是否在警戒范围内（由 EnemypursuitCollider 维护）
+    // 玩家是否在警戒范围内（由 EnemyPursuitCollider 维护）
     protected bool isPlayerInRange;
 
     [Header("基础属性")]
@@ -297,7 +297,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
     /// <summary>
     /// 死亡时给玩家发放经验
-    /// 通过 Tag 查找玩家（与 EnemypursuitCollider 的检测方式一致），
+    /// 通过 Tag 查找玩家（与 EnemyPursuitCollider 的检测方式一致），
     /// 不需要在每个怪物预制体上手动拖玩家引用
     /// </summary>
     protected virtual void GrantExpToPlayer()
@@ -314,7 +314,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
     #endregion
 
     /// <summary>
-    /// 玩家进入警戒范围，由 EnemypursuitCollider 触发
+    /// 玩家进入警戒范围，由 EnemyPursuitCollider 触发
     /// </summary>
     public virtual void PlayerEnterPursuitBox(Transform target)
     {
@@ -329,7 +329,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
     }
 
     /// <summary>
-    /// 玩家退出警戒范围，由 EnemypursuitCollider 触发
+    /// 玩家退出警戒范围，由 EnemyPursuitCollider 触发
     /// </summary>
     public virtual void PlayerExitPursuitBox()
     {
