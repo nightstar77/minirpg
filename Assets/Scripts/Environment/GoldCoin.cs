@@ -1,13 +1,16 @@
 using UnityEngine;
+using MiniRPG.Core;
 
 /// <summary>
 /// 掉落金币：从金矿弹出、滑行减速，玩家靠近后吸附飞向玩家并计入金币。
-/// 生成流程：弹出（物理滑行）→ 停住 → 玩家进入拾取范围 → 吸附 → 拾取销毁。
+/// 生成流程：弹出（物理滑行）→ 停住 → 玩家进入拾取范围 → 吸附 → 拾取回收。
 ///
 /// 预制体配置：SpriteRenderer + Rigidbody2D（Gravity Scale = 0）
 /// + CircleCollider2D（不勾 IsTrigger，用于撞墙/障碍时停下）
+///
+/// 已接入对象池（实现 IPoolable）：拾取后归还池中复用，不再 Destroy。
 /// </summary>
-public class GoldCoin : MonoBehaviour
+public class GoldCoin : MonoBehaviour, IPoolable
 {
     #region ===== Inspector =====
     [Header("金币设置")]
@@ -50,10 +53,29 @@ public class GoldCoin : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+    }
+
+    /// <summary>
+    /// 从对象池取出时重置状态并弹出
+    /// </summary>
+    public void OnSpawned()
+    {
+        // 每次从池中取出都重新生成时间戳与初速度，避免沿用上一次的残留状态
+        isFlying = false;
         spawnTime = Time.time;
-        // 随机方向弹出，让多枚金币散开
-        Vector2 dir = Random.insideUnitCircle.normalized;
-        rb.linearVelocity = dir * popSpeed;
+        rb.bodyType = RigidbodyType2D.Dynamic;
+        rb.linearVelocity = Random.insideUnitCircle.normalized * popSpeed;
+    }
+
+    /// <summary>
+    /// 归还对象池时停止物理运动
+    /// </summary>
+    public void OnDespawned()
+    {
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
     }
 
     private void Update()
@@ -111,7 +133,7 @@ public class GoldCoin : MonoBehaviour
     {
         if (playerGold == null)
         {
-            Destroy(gameObject);   // 玩家没了（切场景/死亡销毁），金币自毁避免悬空
+            ObjectPool.Despawn(gameObject);   // 玩家没了（切场景/死亡销毁），回收金币避免悬空
             return;
         }
         Vector2 targetPos = playerGold.transform.position;
@@ -123,13 +145,13 @@ public class GoldCoin : MonoBehaviour
     }
 
     /// <summary>
-    /// 拾取：计入玩家金币并销毁
+    /// 拾取：计入玩家金币并归还对象池
     /// </summary>
     private void Pickup()
     {
         playerGold.AddGold(value);
         Debug.Log("拾取金币 +" + value);
-        Destroy(gameObject);
+        ObjectPool.Despawn(gameObject);
     }
     #endregion
 }

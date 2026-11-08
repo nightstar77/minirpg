@@ -1,3 +1,4 @@
+using System.Collections;
 using System.IO;
 using UnityEngine;
 
@@ -145,6 +146,41 @@ namespace MiniRPG.Core
         private class SkillSaveWrapper { public System.Collections.Generic.List<int> skills; }
         [System.Serializable]
         private class BindingSave { public int[] actions; public int[] keys; }
+
+        #endregion
+
+        #region ===== 命中停顿 =====
+
+        private Coroutine hitStopRoutine;
+
+        /// <summary>
+        /// 命中停顿：短暂把 Time.timeScale 压低，强化打击感。
+        /// 使用真实时间等待，因此不受自身降低的 timeScale 影响；暂停状态下不触发。
+        /// </summary>
+        public void PlayHitStop(float duration = 0.05f, float slowScale = 0.05f)
+        {
+            if (IsPaused) { return; }
+
+            // 连续命中时刷新计时，避免停顿叠加后恢复时间错乱
+            if (hitStopRoutine != null)
+            {
+                StopCoroutine(hitStopRoutine);
+            }
+            hitStopRoutine = StartCoroutine(HitStopRoutine(duration, slowScale));
+        }
+
+        private IEnumerator HitStopRoutine(float duration, float slowScale)
+        {
+            Time.timeScale = slowScale;
+            yield return new WaitForSecondsRealtime(duration);
+
+            // 期间若玩家手动暂停，则保留暂停的 0 值，不能恢复成 1
+            if (!IsPaused)
+            {
+                Time.timeScale = 1f;
+            }
+            hitStopRoutine = null;
+        }
 
         #endregion
 

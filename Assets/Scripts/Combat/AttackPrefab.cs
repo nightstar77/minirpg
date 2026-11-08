@@ -1,19 +1,44 @@
 using UnityEngine;
+using MiniRPG.Core;
 
 /// <summary>
 /// 攻击预制体：玩家与敌人共用的攻击碰撞体。
 /// isPlayerAttack 决定命中 Player 还是 Enemy 标签。
+///
+/// 已接入对象池（实现 IPoolable）：通过 ObjectPool.Spawn 生成，寿命结束后归还池中。
 /// </summary>
-public class AttackPrefab : MonoBehaviour
+public class AttackPrefab : MonoBehaviour, IPoolable
 {
     public float DestroyTime = 0.3f;
     public bool isPlayerAttack = true;
     public float attackDamage = 10f;
-    private Vector2 attackDirection;
 
-    void Start()
+    private Vector2 attackDirection;
+    private float lifeTimer;
+
+    private void Awake()
     {
-        Destroy(gameObject, DestroyTime);
+        // 兜底：直接摆在场景里的实例也能正常计时
+        lifeTimer = DestroyTime;
+    }
+
+    public void OnSpawned()
+    {
+        // 每次取出时重置寿命，避免沿用上一次的剩余时间
+        lifeTimer = DestroyTime;
+    }
+
+    public void OnDespawned()
+    {
+    }
+
+    private void Update()
+    {
+        lifeTimer -= Time.deltaTime;
+        if (lifeTimer <= 0f)
+        {
+            ObjectPool.Despawn(gameObject);
+        }
     }
 
     /// <summary>
@@ -31,23 +56,23 @@ public class AttackPrefab : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (isPlayerAttack)
+        // 玩家攻击 → 命中敌人；敌人攻击 → 命中玩家
+        string targetTag = isPlayerAttack ? "Enemy" : "Player";
+        if (!collision.CompareTag(targetTag))
         {
-            // 玩家攻击 → 命中敌人
-            if (collision.CompareTag("Enemy"))
-            {
-                IDamageable target = collision.GetComponent<IDamageable>();
-                target.TakeDamage(attackDamage, attackDirection);
-            }
+            return;
         }
-        else
+
+        // 目标可能挂在父物体上，用 GetComponentInParent 更稳妥
+        IDamageable target = collision.GetComponentInParent<IDamageable>();
+        if (target == null)
         {
-            // 敌人攻击 → 命中玩家
-            if (collision.CompareTag("Player"))
-            {
-                IDamageable target = collision.GetComponent<IDamageable>();
-                target.TakeDamage(attackDamage, attackDirection);
-            }
+            return;
         }
+
+        target.TakeDamage(attackDamage, attackDirection);
+
+        // 命中反馈：敌人打玩家时飘红字并强化震屏
+        CombatFeedback.OnHit(collision.transform.position, attackDamage, !isPlayerAttack);
     }
 }

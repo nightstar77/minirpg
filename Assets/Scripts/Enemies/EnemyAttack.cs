@@ -1,4 +1,5 @@
 using UnityEngine;
+using MiniRPG.Core;
 
 /// <summary>
 /// 敌人攻击控制器：管理攻击冷却、距离判定与攻击预制体生成。
@@ -97,17 +98,19 @@ public class EnemyAttack : MonoBehaviour
     {
         GameObject go;
 
+        // 走对象池生成攻击判定，避免每次攻击都 Instantiate + Destroy
         if (spriteRenderer.flipX)
         {
-            go = Instantiate(attackPrefab, attackPointLeft.position, attackPointLeft.rotation);
+            go = ObjectPool.Spawn(attackPrefab, attackPointLeft.position, attackPointLeft.rotation);
             go.transform.localScale = attackPointLeft.localScale;
         }
         else
         {
-            go = Instantiate(attackPrefab, attackPointRight.position, attackPointRight.rotation);
+            go = ObjectPool.Spawn(attackPrefab, attackPointRight.position, attackPointRight.rotation);
             go.transform.localScale = attackPointRight.localScale;
         }
         Vector2 direction = (enemy.TargetPos.position - transform.position).normalized;
+        if (go == null) { return; }
         go.GetComponent<AttackPrefab>().Init(false, enemy.AttackPower, direction);
     }
 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using MiniRPG.Core;
 
 /// <summary>
 /// 金矿：可被玩家普攻破坏的资源点，碎裂后掉落金币。
@@ -101,11 +102,11 @@ public class GoldOre : MonoBehaviour, IDamageable
             oreAnimator.SetTrigger(breakTriggerName);
         }
 
-        // 掉落金币：位置加一点随机偏移，散开更自然
+        // 掉落金币：位置加一点随机偏移，散开更自然（走对象池，避免频繁创建销毁）
         for (int i = 0; i < coinCount; i++)
         {
             Vector2 offset = Random.insideUnitCircle * 0.3f;
-            Instantiate(coinPrefab, transform.position + (Vector3)offset, Quaternion.identity);
+            ObjectPool.Spawn(coinPrefab.gameObject, transform.position + (Vector3)offset, Quaternion.identity);
         }
 
         Debug.Log(name + " 被打碎，掉落金币 x" + coinCount);

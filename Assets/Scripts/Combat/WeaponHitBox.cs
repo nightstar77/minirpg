@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using MiniRPG.Core;
 
 /// <summary>
 /// 武器碰撞盒：挂在玩家武器子对象上，控制攻击判定的开启/关闭与伤害触发。
@@ -66,6 +67,13 @@ public class WeaponHitBox : MonoBehaviour
         // 计算从攻击者到被击者的方向，用于击退
         Vector2 attackDirection = (other.transform.position - attacker.position).normalized;
         target.TakeDamage(damage, attackDirection);
+
+        // 命中反馈（停顿 / 震屏 / 飘字）只对敌人触发，避免打金矿时飘出与实际耐久无关的数字
+        if (other.CompareTag("Enemy"))
+        {
+            CombatFeedback.OnHit(other.transform.position, damage, false);
+        }
+
         Debug.Log("攻击检测到：" + other.name);
     }
     #endregion
