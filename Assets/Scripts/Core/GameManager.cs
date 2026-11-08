@@ -150,6 +150,9 @@ namespace MiniRPG.Core
 
         #region ===== 游戏状态 / 暂停 =====
 
+        /// <summary>当前是否处于暂停状态（玩家输入脚本需据此屏蔽输入）</summary>
+        public bool IsPaused => State == GameState.Paused;
+
         /// <summary>暂停游戏：Time.timeScale 置 0，状态切到 Paused</summary>
         public void PauseGame()
         {

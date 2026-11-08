@@ -1,4 +1,5 @@
 using UnityEngine;
+using MiniRPG.Core;
 
 /// <summary>
 /// 技能输入处理：监听技能槽按键（默认 Q/E/R/F，可在设置面板改键），
@@ -17,8 +18,8 @@ public class SkillInput : MonoBehaviour
 
     private void Update()
     {
-        // 改键捕获期间暂停游戏输入
-        if (GameInputs.IsCapturing)
+        // 改键捕获期间或游戏暂停时暂停游戏输入
+        if (GameInputs.IsCapturing || GameManager.Instance.IsPaused)
         {
             return;
         }

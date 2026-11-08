@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using MiniRPG.Core;
 
 /// <summary>
 /// 玩家攻击控制器：管理连击输入队列、HitBox 开关时机与动画协调。
@@ -83,8 +84,8 @@ public class PlayerAttack : MonoBehaviour
 
     private void ReadAttackInput()
     {
-        // 改键捕获期间暂停游戏输入
-        if (GameInputs.IsCapturing)
+        // 改键捕获期间或游戏暂停时暂停游戏输入
+        if (GameInputs.IsCapturing || GameManager.Instance.IsPaused)
         {
             return;
         }

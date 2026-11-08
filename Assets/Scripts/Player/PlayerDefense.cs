@@ -1,4 +1,5 @@
 using UnityEngine;
+using MiniRPG.Core;
 
 /// <summary>
 /// 玩家防御控制器：与 PlayerAttack 同模式的常驻基础能力，
@@ -33,8 +34,8 @@ public class PlayerDefense : MonoBehaviour
 
     private void Update()
     {
-        // 改键捕获期间暂停游戏输入
-        if (GameInputs.IsCapturing)
+        // 改键捕获期间或游戏暂停时暂停游戏输入
+        if (GameInputs.IsCapturing || GameManager.Instance.IsPaused)
         {
             return;
         }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using MiniRPG.Core;
 
 /// <summary>
 /// 玩家控制器：处理移动输入与冲刺逻辑。
@@ -45,6 +46,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        // 游戏暂停时不读输入
+        if (GameManager.Instance.IsPaused) { return; }
+
         ReadMoveInput();
         UpdateDash();
     }
