@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NPC
+namespace MiniRPG
 {
     /// <summary>
     /// NPC 交互范围触发器

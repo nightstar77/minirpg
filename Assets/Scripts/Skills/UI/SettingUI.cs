@@ -1,17 +1,21 @@
 using UnityEngine;
 
-/// <summary>
-/// 设置面板控制：打开技能树面板
-/// </summary>
-public class SettingUI : MonoBehaviour
+namespace MiniRPG
 {
-    public GameObject SkillTreePanel;
-    void Start()
+    /// <summary>
+    /// 设置面板控制：打开技能树面板
+    /// </summary>
+    public class SettingUI : MonoBehaviour
     {
-        SkillTreePanel.SetActive(false);
+        public GameObject SkillTreePanel;
+        void Start()
+        {
+            SkillTreePanel.SetActive(false);
+        }
+        public void SettingOpen()
+        {
+            SkillTreePanel.SetActive(true);
+        }
     }
-    public void SettingOpen()
-    {
-        SkillTreePanel.SetActive(true);
-    }
+
 }

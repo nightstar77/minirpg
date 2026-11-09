@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NPC.UI
+namespace MiniRPG
 {
     /// <summary>
     /// 交互提示图标跟随脚本

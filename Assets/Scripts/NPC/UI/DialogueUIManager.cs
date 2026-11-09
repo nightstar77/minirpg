@@ -1,9 +1,8 @@
-using NPC.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace NPC.UI
+namespace MiniRPG
 {
     /// <summary>
     /// 对话框 UI 管理器（全局单例）

@@ -1,7 +1,6 @@
 using UnityEngine;
-using MiniRPG.UI;
 
-namespace MiniRPG.Core
+namespace MiniRPG
 {
     /// <summary>
     /// 战斗反馈统一入口：命中时同时触发命中停顿、屏幕震动、伤害飘字。
@@ -30,6 +29,18 @@ namespace MiniRPG.Core
             // 伤害飘字：玩家受伤红色，敌人受伤白色
             Color color = isPlayerHit ? new Color(1f, 0.3f, 0.3f) : Color.white;
             DamageNumbers.Show(worldPos, damage, color);
+        }
+
+        /// <summary>
+        /// 格挡反馈：玩家防御成功时调用，不显示伤害数字，改为格挡提示 + 轻微震屏。
+        /// </summary>
+        /// <param name="worldPos">玩家被击中的位置</param>
+        public static void OnBlock(Vector3 worldPos)
+        {
+            if (GameManager.Instance.IsPaused) { return; }
+
+            CameraShake.ShakeCamera(0.08f, 0.05f);
+            DamageNumbers.ShowText(worldPos, "格挡", new Color(0.75f, 0.85f, 1f));
         }
     }
 }

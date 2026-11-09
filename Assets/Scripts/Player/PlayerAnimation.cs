@@ -1,109 +1,128 @@
 using UnityEngine;
 
-/// <summary>
-/// 玩家动画控制器：根据移动输入和状态播放对应动画，管理朝向翻转
-/// </summary>
-public class PlayerAnimation : MonoBehaviour
+namespace MiniRPG
 {
-    #region ===== Component =====
-
-    private Animator animator;
-    private PlayerController playerController;
-    private PlayerState playerState;
-    private SpriteRenderer spriteRenderer;
-
-    #endregion
-
-    #region ===== Unity =====
-    private void Awake()
-    {
-        animator = GetComponent<Animator>();
-        playerController = GetComponent<PlayerController>();
-        playerState = GetComponent<PlayerState>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-    }
-
-    private void Update()
-    {
-        UpdateMoveAnimation();
-        UpdateFacing();
-    }
-
-    #endregion
-
-    #region ===== Animation =====
-    private void UpdateMoveAnimation()
-    {
-        // 死亡或防御状态下不更新移动动画
-        if (playerState.IsState(PlayerState.State.Dead) || playerState.IsState(PlayerState.State.Defend))
-        { return; }
-
-        // 用移动输入的模长作为 Animator Speed 参数
-        float speed = playerController.MoveDirection.magnitude;
-        animator.SetFloat("Speed", speed);
-    }
-
-    private void UpdateFacing()
-    {
-        Vector2 direction = playerController.MoveDirection;
-
-        if (direction.x > 0.01f)
-        {
-            spriteRenderer.flipX = false;
-        }
-        else if (direction.x < -0.01f)
-        {
-            spriteRenderer.flipX = true;
-        }
-    }
-
-    #endregion
-
-    #region ===== Public =====
-
-    public void PlayHurt()
-    {
-        animator.SetTrigger("Hurt");
-    }
-
-    public void PlayDead()
-    {
-        animator.SetTrigger("Dead");
-    }
-
     /// <summary>
-    /// 设置 Animator Combo 整数参数，驱动连击动画切换
+    /// 玩家动画控制器：根据移动输入和状态播放对应动画，管理朝向翻转
     /// </summary>
-    public void PlayCombo(int combo)
+    public class PlayerAnimation : MonoBehaviour
     {
-        animator.SetInteger("Combo", combo);
-    }
+        #region ===== Component =====
 
-    public void ResetCombo()
-    {
-        animator.SetInteger("Combo", 0);
-    }
+        private Animator animator;
+        private PlayerController playerController;
+        private PlayerState playerState;
+        private SpriteRenderer spriteRenderer;
+        private WeaponHitBox weaponHitBox;
 
-    public void PlayDefend()
-    {
-        animator.SetBool("Defend", true);
-    }
+        #endregion
 
-    public void StopDefend()
-    {
-        animator.SetBool("Defend", false);
-    }
+        #region ===== Unity =====
+        private void Awake()
+        {
+            animator = GetComponent<Animator>();
+            playerController = GetComponent<PlayerController>();
+            playerState = GetComponent<PlayerState>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            weaponHitBox = GetComponentInChildren<WeaponHitBox>();
+        }
 
-    /// <summary>
-    /// 设置动画全局播放速度，用于攻击速度强化。
-    /// multiplier = 1.0 为正常速度，>1 整体加快（含攻击、移动等）。
-    /// 若只想让攻击动画加速而不影响移动，可在 Animator 攻击 clip 的
-    /// Speed 上勾选 Multiplier 指向 AttackSpeed 参数，并改用 SetFloat 设置。
-    /// </summary>
-    public void SetAnimationSpeed(float multiplier)
-    {
-        animator.speed = multiplier;
-    }
+        private void Update()
+        {
+            UpdateMoveAnimation();
+            UpdateFacing();
+        }
 
-    #endregion
+        #endregion
+
+        #region ===== Animation =====
+        private void UpdateMoveAnimation()
+        {
+            // 死亡或防御状态下不更新移动动画
+            if (playerState.IsState(PlayerState.State.Dead) || playerState.IsState(PlayerState.State.Defend))
+            { return; }
+
+            // 用移动输入的模长作为 Animator Speed 参数
+            float speed = playerController.MoveDirection.magnitude;
+            animator.SetFloat("Speed", speed);
+        }
+
+        private void UpdateFacing()
+        {
+            Vector2 direction = playerController.MoveDirection;
+
+            bool facingLeft;
+            if (direction.x > 0.01f)
+            {
+                spriteRenderer.flipX = false;
+                facingLeft = false;
+            }
+            else if (direction.x < -0.01f)
+            {
+                spriteRenderer.flipX = true;
+                facingLeft = true;
+            }
+            else
+            {
+                // 无横向输入时保持当前朝向，判定盒也保持不变
+                return;
+            }
+
+            // 翻转只影响精灵，判定盒需同步镜像，否则朝左时判定区仍停在右侧
+            if (weaponHitBox != null)
+            {
+                weaponHitBox.SetFacing(facingLeft ? -1f : 1f);
+            }
+        }
+
+        #endregion
+
+        #region ===== Public =====
+
+        public void PlayHurt()
+        {
+            animator.SetTrigger("Hurt");
+        }
+
+        public void PlayDead()
+        {
+            animator.SetTrigger("Dead");
+        }
+
+        /// <summary>
+        /// 设置 Animator Combo 整数参数，驱动连击动画切换
+        /// </summary>
+        public void PlayCombo(int combo)
+        {
+            animator.SetInteger("Combo", combo);
+        }
+
+        public void ResetCombo()
+        {
+            animator.SetInteger("Combo", 0);
+        }
+
+        public void PlayDefend()
+        {
+            animator.SetBool("Defend", true);
+        }
+
+        public void StopDefend()
+        {
+            animator.SetBool("Defend", false);
+        }
+
+        /// <summary>
+        /// 设置动画全局播放速度，用于攻击速度强化。
+        /// multiplier = 1.0 为正常速度，>1 整体加快（含攻击、移动等）。
+        /// 若只想让攻击动画加速而不影响移动，可在 Animator 攻击 clip 的
+        /// Speed 上勾选 Multiplier 指向 AttackSpeed 参数，并改用 SetFloat 设置。
+        /// </summary>
+        public void SetAnimationSpeed(float multiplier)
+        {
+            animator.speed = multiplier;
+        }
+
+        #endregion
+    }
 }

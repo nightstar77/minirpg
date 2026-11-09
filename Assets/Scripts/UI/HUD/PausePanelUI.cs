@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace MiniRPG.Core
+namespace MiniRPG
 {
     /// <summary>
     /// 暂停面板 UI：游戏暂停时显示，提供继续/重新开始/返回主菜单按钮。

@@ -1,26 +1,29 @@
 using UnityEngine;
 
-/// <summary>
-/// 技能类型枚举，用于技能注册、查找和存档
-/// </summary>
-public enum SkillType { None, Dash, Fireball, Explosion }
-
-/// <summary>
-/// 技能配置基类（ScriptableObject）：所有技能配置的基类，在 Inspector 中创建和配置
-/// </summary>
-public abstract class SkillData : ScriptableObject
+namespace MiniRPG
 {
-    public SkillType skillType;
+    /// <summary>
+    /// 技能类型枚举，用于技能注册、查找和存档
+    /// </summary>
+    public enum SkillType { None, Dash, Fireball, Explosion }
 
-    [Header("基础信息")]
-    public string skillName;
+    /// <summary>
+    /// 技能配置基类（ScriptableObject）：所有技能配置的基类，在 Inspector 中创建和配置
+    /// </summary>
+    public abstract class SkillData : ScriptableObject
+    {
+        public SkillType skillType;
 
-    [TextArea]
-    public string description;
+        [Header("基础信息")]
+        public string skillName;
 
-    [Header("图标")]
-    public Sprite icon;
+        [TextArea]
+        public string description;
 
-    [Header("冷却")]
-    public float cooldown = 1f;
+        [Header("图标")]
+        public Sprite icon;
+
+        [Header("冷却")]
+        public float cooldown = 1f;
+    }
 }

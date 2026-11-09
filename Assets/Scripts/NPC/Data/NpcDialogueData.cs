@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NPC.Data
+namespace MiniRPG
 {
     /// <summary>
     /// NPC 对话数据（ScriptableObject）

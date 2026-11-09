@@ -1,43 +1,45 @@
 using UnityEngine;
-using MiniRPG.Core;
 
-/// <summary>
-/// 技能输入处理：监听技能槽按键（默认 Q/E/R/F，可在设置面板改键），
-/// 将按键映射到对应技能槽并触发技能
-/// </summary>
-public class SkillInput : MonoBehaviour
+namespace MiniRPG
 {
-    [SerializeField]
-    private SkillController skillController;
-
-    private void Awake()
+    /// <summary>
+    /// 技能输入处理：监听技能槽按键（默认 Q/E/R/F，可在设置面板改键），
+    /// 将按键映射到对应技能槽并触发技能
+    /// </summary>
+    public class SkillInput : MonoBehaviour
     {
-        if (skillController == null)
-        { skillController = GetComponent<SkillController>(); }
-    }
+        [SerializeField]
+        private SkillController skillController;
 
-    private void Update()
-    {
-        // 改键捕获期间或游戏暂停时暂停游戏输入
-        if (GameInputs.IsCapturing || GameManager.Instance.IsPaused)
+        private void Awake()
         {
-            return;
+            if (skillController == null)
+            { skillController = GetComponent<SkillController>(); }
         }
 
-        // 按槽位顺序读取各自绑定的按键
-        for (int i = 0; i < GameInputs.SkillActions.Length; i++)
+        private void Update()
         {
-            if (Input.GetKeyDown(GameInputs.GetSkillKey(i)))
+            // 改键捕获期间或游戏暂停时暂停游戏输入
+            if (GameInputs.IsCapturing || GameManager.Instance.IsPaused)
             {
-                UseSkillSlot(i);
+                return;
+            }
+
+            // 按槽位顺序读取各自绑定的按键
+            for (int i = 0; i < GameInputs.SkillActions.Length; i++)
+            {
+                if (Input.GetKeyDown(GameInputs.GetSkillKey(i)))
+                {
+                    UseSkillSlot(i);
+                }
             }
         }
-    }
 
-    private void UseSkillSlot(int index)
-    {
-        // 槽位索引与 GameInputs.SkillActions 一一对应，直接使用
-        skillController.UseSkill(index);
-    }
+        private void UseSkillSlot(int index)
+        {
+            // 槽位索引与 GameInputs.SkillActions 一一对应，直接使用
+            skillController.UseSkill(index);
+        }
 
+    }
 }

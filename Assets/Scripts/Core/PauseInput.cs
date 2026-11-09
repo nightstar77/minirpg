@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MiniRPG.Core
+namespace MiniRPG
 {
     /// <summary>
     /// 暂停输入：监听 Esc 键切换游戏暂停状态。

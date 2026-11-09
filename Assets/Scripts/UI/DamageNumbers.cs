@@ -1,8 +1,7 @@
 using TMPro;
 using UnityEngine;
-using MiniRPG.Core;
 
-namespace MiniRPG.UI
+namespace MiniRPG
 {
     /// <summary>
     /// 伤害飘字：受击时在目标位置弹出伤害数字，上飘并淡出。
@@ -21,6 +20,18 @@ namespace MiniRPG.UI
         /// <param name="color">颜色（玩家受伤用红色，敌人受伤用白色）</param>
         public static void Show(Vector3 worldPos, float amount, Color color)
         {
+            // 伤害取整显示，避免出现 12.3456 这种长数字
+            ShowText(worldPos, Mathf.RoundToInt(amount).ToString(), color);
+        }
+
+        /// <summary>
+        /// 显示一段文字（如格挡提示）
+        /// </summary>
+        /// <param name="worldPos">出现位置</param>
+        /// <param name="content">显示内容</param>
+        /// <param name="color">文字颜色</param>
+        public static void ShowText(Vector3 worldPos, string content, Color color)
+        {
             // 项目没有配置 TMP 默认字体时直接跳过，避免每帧刷空引用警告
             if (TMP_Settings.defaultFontAsset == null) { return; }
 
@@ -36,8 +47,7 @@ namespace MiniRPG.UI
             DamageNumberItem item = go.GetComponent<DamageNumberItem>();
             if (item != null)
             {
-                // 伤害取整显示，避免出现 12.3456 这种长数字
-                item.Play(Mathf.RoundToInt(amount).ToString(), color);
+                item.Play(content, color);
             }
         }
 

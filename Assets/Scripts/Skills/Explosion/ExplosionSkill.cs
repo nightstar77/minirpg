@@ -1,47 +1,53 @@
 using UnityEngine;
 
-/// <summary>
-/// 爆炸技能：以施法者为中心圆形范围伤害，生成爆炸特效预制体
-/// </summary>
-public class ExplosionSkill : SkillBase
+namespace MiniRPG
 {
-    [SerializeField]
-    private ExplosionSkillData data;
-
-    [SerializeField]
-    private GameObject explosionPrefab;
-    [SerializeField]
-    private LayerMask enemyLayer;
-
-    protected override SkillData Data
+    /// <summary>
+    /// 爆炸技能：以施法者为中心圆形范围伤害，生成爆炸特效预制体
+    /// </summary>
+    public class ExplosionSkill : SkillBase
     {
-        get { return data; }
-    }
+        [SerializeField]
+        private ExplosionSkillData data;
 
-    public override void Use()
-    {
-        if (!CanUse())
+        [SerializeField]
+        private GameObject explosionPrefab;
+        [SerializeField]
+        private LayerMask enemyLayer;
+
+        protected override SkillData Data
         {
-            Debug.Log("Explosion冷却中");
-            return;
+            get { return data; }
         }
-        Debug.Log("释放Explosion");
-        CreateExplosion();
-        StartCooldown();
-    }
 
-    private void CreateExplosion()
-    {
-        // 生成爆炸特效
-        Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-        // 范围内所有敌人受伤，击退方向为爆炸中心→敌人
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, data.radius, enemyLayer);
-        foreach (Collider2D enemy in enemies)
+        public override void Use()
         {
-            IDamageable damageable = enemy.GetComponent<IDamageable>();
-            if (damageable != null)
+            if (!CanUse())
             {
-                damageable.TakeDamage(data.Damage, enemy.transform.position - transform.position);
+                Logger.Log("Explosion冷却中");
+                return;
+            }
+            Logger.Log("释放Explosion");
+            CreateExplosion();
+            StartCooldown();
+        }
+
+        private void CreateExplosion()
+        {
+            // 生成爆炸特效
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            // 范围内所有敌人受伤，击退方向为爆炸中心→敌人
+            Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, data.radius, enemyLayer);
+            foreach (Collider2D enemy in enemies)
+            {
+                IDamageable damageable = enemy.GetComponent<IDamageable>();
+                if (damageable != null)
+                {
+                    damageable.TakeDamage(data.Damage, enemy.transform.position - transform.position);
+
+                    // 命中反馈（停顿 / 震屏 / 飘字），与近战命中走同一入口
+                    CombatFeedback.OnHit(enemy.transform.position, data.Damage, false);
+                }
             }
         }
     }

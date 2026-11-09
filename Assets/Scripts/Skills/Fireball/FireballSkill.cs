@@ -1,41 +1,44 @@
 using UnityEngine;
 
-/// <summary>
-/// 火球技能：沿玩家最后移动方向发射投射体，命中后触发携带的技能效果
-/// </summary>
-public class FireballSkill : SkillBase
+namespace MiniRPG
 {
-    [SerializeField]
-    private FireballSkillData data;
-    protected override SkillData Data => data;
-
-    private Transform firePoint;
-
-    private PlayerController playerController;
-
-    private void Awake()
+    /// <summary>
+    /// 火球技能：沿玩家最后移动方向发射投射体，命中后触发携带的技能效果
+    /// </summary>
+    public class FireballSkill : SkillBase
     {
-        firePoint = transform;
-        playerController = GetComponent<PlayerController>();
-    }
+        [SerializeField]
+        private FireballSkillData data;
+        protected override SkillData Data => data;
 
-    public override void Use()
-    {
-        if (!CanUse())
+        private Transform firePoint;
+
+        private PlayerController playerController;
+
+        private void Awake()
         {
-            Debug.Log("Fireball冷却中");
-            return;
+            firePoint = transform;
+            playerController = GetComponent<PlayerController>();
         }
-        Debug.Log("Fireball释放");
 
-        StartCooldown();
-        // 以玩家最后移动方向作为火球飞行方向
-        Vector2 direction = playerController.LastMoveDirection;
+        public override void Use()
+        {
+            if (!CanUse())
+            {
+                Logger.Log("Fireball冷却中");
+                return;
+            }
+            Logger.Log("Fireball释放");
 
-        GameObject fireball = Instantiate(data.projectilePrefab, firePoint.position, Quaternion.identity);
+            StartCooldown();
+            // 以玩家最后移动方向作为火球飞行方向
+            Vector2 direction = playerController.LastMoveDirection;
 
-        FireballProjectile projectile = fireball.GetComponent<FireballProjectile>();
+            GameObject fireball = Instantiate(data.projectilePrefab, firePoint.position, Quaternion.identity);
 
-        projectile.Init(direction, data.speed, data.lifetime, data.effects);
+            FireballProjectile projectile = fireball.GetComponent<FireballProjectile>();
+
+            projectile.Init(direction, data.speed, data.lifetime, data.effects);
+        }
     }
 }

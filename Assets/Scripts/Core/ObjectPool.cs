@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MiniRPG.Core
+namespace MiniRPG
 {
     /// <summary>
     /// 可池化对象接口：从池中取出 / 归还池中时回调，用于重置运行时状态。

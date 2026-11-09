@@ -1,8 +1,6 @@
-using NPC.Data;
-using NPC.UI;
 using UnityEngine;
 
-namespace NPC
+namespace MiniRPG
 {
     /// <summary>
     /// NPC 状态枚举

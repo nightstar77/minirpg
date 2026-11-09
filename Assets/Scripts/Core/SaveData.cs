@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MiniRPG.Core
+namespace MiniRPG
 {
     /// <summary>
     /// 全局存档数据：所有需要持久化的玩家进度与设置统一存于此。

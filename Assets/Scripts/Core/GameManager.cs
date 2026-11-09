@@ -2,7 +2,7 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 
-namespace MiniRPG.Core
+namespace MiniRPG
 {
     /// <summary>
     /// 全局游戏管理器（单例，跨场景存活）。

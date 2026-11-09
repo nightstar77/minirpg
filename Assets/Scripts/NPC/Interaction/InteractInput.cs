@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NPC
+namespace MiniRPG
 {
     /// <summary>
     /// 玩家交互输入
